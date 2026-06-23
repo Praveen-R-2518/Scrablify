@@ -4,7 +4,7 @@ Scrablify is a first-year hardware project website and dashboard for a human-vs-
 
 ## Website
 
-Open `index.html` in a browser to view the project showcase and dashboard prototype.
+Open `index.html` in a browser to view the landing page, then use the navigation bar to visit the separate Dashboard, Hardware, Workflow, and Team pages.
 
 The current dashboard includes:
 

@@ -52,4 +52,6 @@ function updateDashboard() {
   moveIndex = (moveIndex + 1) % moves.length;
 }
 
-simulateMoveButton.addEventListener("click", updateDashboard);
+if (simulateMoveButton && movesListElement) {
+  simulateMoveButton.addEventListener("click", updateDashboard);
+}
