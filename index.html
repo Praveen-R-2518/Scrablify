@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scrablify | Human vs Robot Scrabble</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a class="brand" href="#home" aria-label="Scrablify home">
+        <span class="brand-mark">S</span>
+        <span>Scrablify</span>
+      </a>
+      <div class="nav-links" aria-label="Primary navigation">
+        <a href="#dashboard">Dashboard</a>
+        <a href="#hardware">Hardware</a>
+        <a href="#workflow">Workflow</a>
+        <a href="#team">Team</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero section" id="home">
+      <div class="hero-copy">
+        <p class="eyebrow">First Year Hardware Project</p>
+        <h1>Play Scrabble against a real robot.</h1>
+        <p class="hero-text">
+          Scrablify combines a physical Scrabble board, a robot move system, and a live web dashboard so a human player can challenge an automated opponent.
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="#dashboard">Open Dashboard</a>
+          <a class="button secondary" href="#hardware">Explore Build</a>
+        </div>
+        <div class="stats-row" aria-label="Project highlights">
+          <div>
+            <strong>2</strong>
+            <span>Players</span>
+          </div>
+          <div>
+            <strong>15x15</strong>
+            <span>Board Grid</span>
+          </div>
+          <div>
+            <strong>Live</strong>
+            <span>Robot Turns</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-card" aria-label="Scrablify system preview">
+        <div class="robot-orbit">
+          <div class="robot-head">
+            <span class="eye"></span>
+            <span class="eye"></span>
+          </div>
+          <div class="robot-arm"></div>
+        </div>
+        <div class="mini-board" aria-hidden="true">
+          <span>S</span><span>C</span><span>R</span><span>A</span><span>B</span>
+          <span>L</span><span>I</span><span>F</span><span>Y</span><span>+</span>
+          <span>H</span><span>U</span><span>M</span><span>A</span><span>N</span>
+          <span>R</span><span>O</span><span>B</span><span>O</span><span>T</span>
+          <span>W</span><span>O</span><span>R</span><span>D</span><span>S</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dashboard-section" id="dashboard">
+      <div class="section-heading">
+        <p class="eyebrow">Main Dashboard</p>
+        <h2>Human vs Robot Match Control</h2>
+        <p>Track the current game, robot state, scores, board activity, and next move from one place.</p>
+      </div>
+
+      <div class="dashboard-grid">
+        <article class="panel score-panel">
+          <div class="panel-title">
+            <span>Scoreboard</span>
+            <span class="status-pill live">Live Match</span>
+          </div>
+          <div class="score-cards">
+            <div class="score-card human">
+              <span>Human</span>
+              <strong id="humanScore">84</strong>
+            </div>
+            <div class="score-card robot">
+              <span>Robot</span>
+              <strong id="robotScore">78</strong>
+            </div>
+          </div>
+          <button class="button primary full-width" id="simulateMove" type="button">Simulate Next Move</button>
+        </article>
+
+        <article class="panel board-panel">
+          <div class="panel-title">
+            <span>Scrabble Board</span>
+            <span class="status-pill" id="turnStatus">Human Turn</span>
+          </div>
+          <div class="board" aria-label="Scrabble board preview">
+            <span class="tile word">S</span><span></span><span></span><span class="bonus">DL</span><span></span><span></span><span></span>
+            <span></span><span class="tile word">C</span><span></span><span></span><span></span><span class="bonus">TW</span><span></span>
+            <span></span><span></span><span class="tile word">R</span><span></span><span></span><span></span><span></span>
+            <span class="bonus">TL</span><span></span><span></span><span class="tile word">A</span><span></span><span></span><span class="bonus">DL</span>
+            <span></span><span></span><span></span><span></span><span class="tile word">B</span><span></span><span></span>
+            <span></span><span class="bonus">DW</span><span></span><span></span><span></span><span class="tile robot-move">O</span><span></span>
+            <span></span><span></span><span></span><span class="bonus">★</span><span></span><span></span><span class="tile robot-move">T</span>
+          </div>
+        </article>
+
+        <article class="panel robot-panel">
+          <div class="panel-title">
+            <span>Robot Status</span>
+            <span class="status-pill ready" id="robotState">Ready</span>
+          </div>
+          <div class="robot-status">
+            <div>
+              <span>Arm Position</span>
+              <strong id="armPosition">Home</strong>
+            </div>
+            <div>
+              <span>Tile Pickup</span>
+              <strong id="tilePickup">Idle</strong>
+            </div>
+            <div>
+              <span>Camera Scan</span>
+              <strong id="cameraScan">Board Clear</strong>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel moves-panel">
+          <div class="panel-title">
+            <span>Recent Moves</span>
+            <span class="status-pill">Round 7</span>
+          </div>
+          <ol class="moves-list" id="movesList">
+            <li><strong>Human</strong> placed SCRABBLE for 28 points.</li>
+            <li><strong>Robot</strong> placed BOT for 14 points.</li>
+            <li><strong>Human</strong> placed CODE for 18 points.</li>
+          </ol>
+        </article>
+      </div>
+    </section>
+
+    <section class="section split-section" id="hardware">
+      <div>
+        <p class="eyebrow">Hardware Showcase</p>
+        <h2>Built to connect software decisions with physical motion.</h2>
+      </div>
+      <div class="feature-list">
+        <article>
+          <span>01</span>
+          <h3>Board Detection</h3>
+          <p>Camera input can identify the board state and help the system understand where letters have been placed.</p>
+        </article>
+        <article>
+          <span>02</span>
+          <h3>Robot Movement</h3>
+          <p>The robot is designed to pick a tile and place it on the correct square during its turn.</p>
+        </article>
+        <article>
+          <span>03</span>
+          <h3>Game Intelligence</h3>
+          <p>The dashboard presents suggested moves, live scores, turn status, and hardware readiness for the match.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section workflow-section" id="workflow">
+      <div class="section-heading">
+        <p class="eyebrow">Game Flow</p>
+        <h2>From human move to robot response</h2>
+      </div>
+      <div class="timeline">
+        <div>
+          <span>1</span>
+          <p>Human places tiles on the physical Scrabble board.</p>
+        </div>
+        <div>
+          <span>2</span>
+          <p>System scans the board and updates the dashboard.</p>
+        </div>
+        <div>
+          <span>3</span>
+          <p>Robot calculates its word and prepares the move.</p>
+        </div>
+        <div>
+          <span>4</span>
+          <p>Robot places tiles and the score is refreshed.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section team-section" id="team">
+      <div>
+        <p class="eyebrow">Project Identity</p>
+        <h2>Scrablify</h2>
+        <p>
+          A first-year hardware project that turns a classic word game into a robotics challenge. This website is the project showcase and the future home of the live match dashboard.
+        </p>
+      </div>
+      <a class="button secondary" href="#home">Back to Top</a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Scrablify Dashboard</span>
+    <span>Human vs Robot Scrabble Project</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
