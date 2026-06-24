@@ -1390,16 +1390,13 @@ function Footer() {
   return (
     <footer className="mx-auto grid w-[min(1120px,calc(100%_-_32px))] gap-4 border-t border-[var(--border)] py-8 text-sm text-[var(--muted)] md:grid-cols-3">
       <div>
-        <p className="font-bold text-[var(--text)]">Team Information</p>
-        <p className="mt-2">First Year Microcontroller Project</p>
+        <p>First Year Microcontroller Project</p>
       </div>
       <div>
-        <p className="font-bold text-[var(--text)]">Faculty Information</p>
-        <p className="mt-2">Information Technology</p>
+        <p>Faculty of Information Technology</p>
       </div>
       <div>
-        <p className="font-bold text-[var(--text)]">Project Year</p>
-        <p className="mt-2">First Year (24 Batch)</p>
+        <p>Batch 24</p>
       </div>
     </footer>
   );
