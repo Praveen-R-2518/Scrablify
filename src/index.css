@@ -119,29 +119,24 @@ a:focus-visible {
 
 .avatar-ring {
   position: absolute;
-  inset: -8px;
-  border-radius: 50%;
-  border: 2px dashed currentColor;
-  animation: spin 10s linear infinite;
-  z-index: 3;
-  opacity: 0.8;
-  box-shadow: 0 0 10px currentColor, inset 0 0 10px currentColor;
-}
-
-.avatar-ring::before {
-  content: '';
-  position: absolute;
-  inset: -8px;
+  inset: -4px;
   border-radius: 50%;
   border: 2px solid currentColor;
-  animation: spin 15s linear infinite reverse;
-  opacity: 0.3;
-  transform: scale(1.15);
+  animation: pulse-ring 3s ease-in-out infinite;
+  z-index: 3;
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+@keyframes pulse-ring {
+  0%, 100% { 
+    transform: scale(1); 
+    opacity: 0.3; 
+    box-shadow: 0 0 0px currentColor; 
+  }
+  50% { 
+    transform: scale(1.05); 
+    opacity: 0.6; 
+    box-shadow: 0 0 15px currentColor; 
+  }
 }
 
 .hide-scrollbar::-webkit-scrollbar {

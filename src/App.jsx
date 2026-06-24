@@ -467,15 +467,10 @@ function TeamPage() {
         <h1 className="mt-5 max-w-4xl text-balance text-4xl font-extrabold leading-tight tracking-[-0.06em] sm:text-6xl text-white">
           Meet the Scrablify Team
         </h1>
-        <p className="mt-6 max-w-2xl text-base leading-8 text-[var(--muted)]">
-          This page introduces the people, responsibilities, skills, faculty support, and achievements behind the Scrablify hardware project.
-        </p>
       </section>
       <TeamIntroduction />
       <TeamMemberCards />
-      <TeamStructure />
       <SkillsMatrix />
-      <FacultyAdvisor />
       <TeamAchievements />
     </>
   );
@@ -578,41 +573,6 @@ function TeamMemberCards() {
   );
 }
 
-function TeamStructure() {
-  return (
-    <Section eyebrow="Team structure" title="A simple hierarchy for ownership and communication.">
-      <Card className="p-6">
-        <div className="grid gap-4 text-center">
-          <StructureNode title="Faculty Advisor" subtitle="Guidance, review, and project evaluation" emphasis />
-          <div className="mx-auto h-8 w-px bg-[var(--border)]" aria-hidden="true" />
-          <StructureNode title="Project Integration Lead" subtitle="System planning and milestone coordination" />
-          <div className="mx-auto h-8 w-px bg-[var(--border)]" aria-hidden="true" />
-          <div className="grid gap-4 md:grid-cols-3">
-            <StructureNode title="Hardware Team" subtitle="Mechanism, CAD, electronics" />
-            <StructureNode title="Software Team" subtitle="Dashboard, game logic, telemetry" />
-            <StructureNode title="Testing Team" subtitle="Validation, demo flow, documentation" />
-          </div>
-        </div>
-      </Card>
-    </Section>
-  );
-}
-
-function StructureNode({ title, subtitle, emphasis = false }) {
-  return (
-    <div
-      className={`rounded-3xl border p-5 ${
-        emphasis
-          ? "border-[var(--primary)] bg-[rgba(0,106,78,0.14)]"
-          : "border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.035)]"
-      }`}
-    >
-      <p className="font-extrabold">{title}</p>
-      <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{subtitle}</p>
-    </div>
-  );
-}
-
 function SkillsMatrix() {
   return (
     <Section eyebrow="Skills matrix" title="Capability coverage across the project lifecycle.">
@@ -633,31 +593,6 @@ function SkillsMatrix() {
               </div>
             </div>
           ))}
-        </div>
-      </Card>
-    </Section>
-  );
-}
-
-function FacultyAdvisor() {
-  return (
-    <Section eyebrow="Faculty advisor" title="Academic guidance for engineering decisions and presentation quality.">
-      <Card className="p-7">
-        <div className="grid gap-6 md:grid-cols-[160px_1fr] md:items-center">
-          <div
-            className="grid aspect-square w-40 place-items-center rounded-[2rem] border border-[var(--border)] bg-[rgba(255,255,255,0.04)] text-sm font-bold text-[var(--muted)]"
-            aria-label="Faculty advisor photo placeholder"
-          >
-            Advisor Photo
-          </div>
-          <div>
-            <p className="text-3xl font-extrabold tracking-[-0.05em]">Faculty Advisor Name</p>
-            <p className="mt-2 text-sm font-bold text-[var(--primary)]">Department / Robotics Lab Placeholder</p>
-            <p className="mt-5 max-w-3xl text-sm leading-7 text-[var(--muted)]">
-              Provides technical review, milestone feedback, hardware safety guidance, and support for
-              presenting Scrablify as a structured university robotics project.
-            </p>
-          </div>
         </div>
       </Card>
     </Section>
