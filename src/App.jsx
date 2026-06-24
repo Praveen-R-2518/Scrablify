@@ -180,22 +180,6 @@ const telemetryChannels = [
   ["Board sync", "99%"],
 ];
 
-const scoreTrend = [
-  [0, 92, 86],
-  [1, 98, 91],
-  [2, 104, 103],
-  [3, 112, 109],
-  [4, 119, 117],
-  [5, 126, 124],
-];
-
-const matchStatistics = [
-  ["Human action success", "91%"],
-  ["Robot action success", "88%"],
-  ["Average turn latency", "1.8s"],
-  ["Scoring efficiency", "86%"],
-];
-
 const highlights = [
   {
     title: "Autonomous Navigation",
@@ -739,8 +723,6 @@ function RealTimeMatchDashboard() {
           <EventFeed activeIndex={match.eventIndex} />
           <TelemetryPanel />
         </div>
-
-        <AnalyticsPanel />
       </div>
     </Section>
   );
@@ -848,54 +830,6 @@ function TelemetryPanel() {
         ))}
       </div>
     </Card>
-  );
-}
-
-function AnalyticsPanel() {
-  return (
-    <Card className="p-6">
-      <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
-        <div>
-          <p className="text-sm font-extrabold text-[var(--primary)]">Score Trend Graph</p>
-          <div className="mt-5 rounded-3xl border border-[rgba(255,255,255,0.08)] p-4">
-            <ScoreTrendGraph />
-          </div>
-        </div>
-
-        <div>
-          <p className="text-sm font-extrabold text-[var(--primary)]">Match Statistics</p>
-          <div className="mt-5 grid gap-3">
-            {matchStatistics.map(([label, value]) => (
-              <div key={label} className="flex items-center justify-between rounded-2xl border border-[rgba(255,255,255,0.08)] px-4 py-3">
-                <span className="text-sm text-[var(--muted)]">{label}</span>
-                <span className="text-sm font-extrabold">{value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </Card>
-  );
-}
-
-function ScoreTrendGraph() {
-  const humanPoints = scoreTrend.map(([x, human]) => `${x * 48 + 8},${150 - human * 0.78}`).join(" ");
-  const robotPoints = scoreTrend.map(([x, , robot]) => `${x * 48 + 8},${150 - robot * 0.78}`).join(" ");
-
-  return (
-    <svg viewBox="0 0 260 160" className="h-56 w-full" role="img" aria-label="Score trend graph for human and robot players">
-      {[40, 80, 120].map((y) => (
-        <line key={y} x1="0" x2="260" y1={y} y2={y} stroke="rgba(255,255,255,0.08)" />
-      ))}
-      <polyline points={humanPoints} fill="none" stroke="var(--text)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-      <polyline points={robotPoints} fill="none" stroke="var(--primary)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-      {scoreTrend.map(([x, human, robot]) => (
-        <g key={x}>
-          <circle cx={x * 48 + 8} cy={150 - human * 0.78} r="3.5" fill="var(--text)" />
-          <circle cx={x * 48 + 8} cy={150 - robot * 0.78} r="3.5" fill="var(--primary)" />
-        </g>
-      ))}
-    </svg>
   );
 }
 

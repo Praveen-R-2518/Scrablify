@@ -21,6 +21,8 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-color: #050505 transparent;
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -32,6 +34,36 @@ body {
     radial-gradient(circle at top left, rgba(255, 255, 255, 0.15), transparent 40rem),
     radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.05), transparent 40rem),
     linear-gradient(135deg, #1f1f1f 0%, #000000 50%, #0a0a0a 100%);
+}
+
+::-webkit-scrollbar {
+  width: 32px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  min-height: 96px;
+  border: 10px solid transparent;
+  border-radius: 999px;
+  background: #050505;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #111111;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: var(--primary);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 ::selection {
