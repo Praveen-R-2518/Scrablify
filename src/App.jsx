@@ -1,0 +1,899 @@
+import { useEffect, useState } from "react";
+import { Link, NavLink, Route, Routes } from "react-router-dom";
+
+const navItems = [
+  { label: "Overview", href: "/overview" },
+  { label: "System", href: "/system" },
+  { label: "Hardware", href: "/hardware" },
+  { label: "Team", href: "/team" },
+];
+
+const metrics = [
+  { value: "15x15", label: "Physical board grid" },
+  { value: "2", label: "Human and robot players" },
+  { value: "Live", label: "Telemetry dashboard" },
+  { value: "Demo", label: "Presentation ready" },
+];
+
+const architecture = [
+  {
+    title: "Vision Layer",
+    detail:
+      "Camera-assisted board state capture for detecting tile placement, turn progress, and board occupancy.",
+  },
+  {
+    title: "Decision Layer",
+    detail:
+      "Move scoring, candidate word ranking, and game-state validation before the robot commits a physical action.",
+  },
+  {
+    title: "Motion Layer",
+    detail:
+      "Robot arm control for tile pickup, travel, placement, and safe return-to-home behavior.",
+  },
+  {
+    title: "Dashboard Layer",
+    detail:
+      "Operator-facing interface for scores, status, recent moves, hardware readiness, and test observations.",
+  },
+];
+
+const hardwareModules = [
+  {
+    name: "Board Sensing",
+    status: "Prototype",
+    copy: "Placeholder for camera module, calibration notes, tile recognition method, and lighting constraints.",
+  },
+  {
+    name: "Tile Handling",
+    status: "In progress",
+    copy: "Placeholder for gripper design, tile pickup tolerance, rack alignment, and placement repeatability.",
+  },
+  {
+    name: "Robot Motion",
+    status: "Prototype",
+    copy: "Placeholder for servo/stepper selection, movement envelope, homing routine, and safety limits.",
+  },
+  {
+    name: "Game Engine",
+    status: "Planned",
+    copy: "Placeholder for dictionary source, scoring rules, move search logic, and invalid-move handling.",
+  },
+];
+
+const workflow = [
+  "Human places tiles on the physical Scrabble board.",
+  "The board state is scanned and compared with the previous turn.",
+  "The system computes a valid robot move and checks hardware readiness.",
+  "The robot picks, moves, and places tiles while the dashboard records the result.",
+];
+
+const matchFeed = [
+  "Robot placed BOT across center lane.",
+  "Vision scan confirmed board alignment.",
+  "Human submitted SCRABBLE for validation.",
+  "Gripper returned to home position.",
+];
+
+const telemetry = [
+  ["Camera", "Streaming"],
+  ["Robot Arm", "Ready"],
+  ["Board Scan", "Stable"],
+  ["Move Engine", "Online"],
+];
+
+const highlights = [
+  {
+    title: "Autonomous Navigation",
+    copy: "Controlled movement planning for tile pickup, travel, placement, and safe return-to-home behavior.",
+  },
+  {
+    title: "Computer Vision",
+    copy: "Board-state recognition placeholders for camera calibration, tile detection, and square-level validation.",
+  },
+  {
+    title: "Mechanical Design",
+    copy: "End-effector, rack alignment, and placement tolerance documentation for a physical game system.",
+  },
+  {
+    title: "Embedded Systems",
+    copy: "Microcontroller and actuator integration placeholders for reliable turn execution and telemetry.",
+  },
+];
+
+const stats = [
+  ["Detection Accuracy", "94%", "Placeholder target from board-state tests"],
+  ["Response Time", "1.8s", "Average decision-to-action interval"],
+  ["Total Matches", "12", "Demo and calibration rounds logged"],
+  ["Success Rate", "88%", "Completed robot turns without reset"],
+];
+
+const teamMembers = [
+  {
+    name: "Team Lead",
+    role: "Project Integration Lead",
+    responsibilities: "Coordinates subsystem milestones, demo planning, and system-level integration.",
+    expertise: "Systems thinking, robotics workflow, technical communication",
+    highlights: "Defined the turn-cycle architecture and organized validation checkpoints.",
+  },
+  {
+    name: "Embedded Engineer",
+    role: "Controls and Firmware",
+    responsibilities: "Develops microcontroller logic, actuator control, and hardware status routines.",
+    expertise: "Embedded C, PWM control, sensor interfacing",
+    highlights: "Built placeholders for robot readiness states and safe return-to-home behavior.",
+  },
+  {
+    name: "Mechanical Designer",
+    role: "Robot Mechanism and CAD",
+    responsibilities: "Designs tile handling, gripper geometry, rack alignment, and board interaction parts.",
+    expertise: "CAD modeling, tolerance planning, mechanism design",
+    highlights: "Documented early gripper requirements for reliable tile pickup and placement.",
+  },
+  {
+    name: "Software Engineer",
+    role: "Dashboard and Game Logic",
+    responsibilities: "Builds the operator dashboard, match state UI, and scoring workflow placeholders.",
+    expertise: "React, UI engineering, game-state modeling",
+    highlights: "Implemented the live dashboard preview and match telemetry presentation.",
+  },
+];
+
+const skillsMatrix = [
+  ["Embedded Systems", 4],
+  ["Electronics", 3],
+  ["CAD Design", 4],
+  ["Programming", 5],
+  ["Testing", 4],
+  ["Documentation", 5],
+];
+
+const achievements = [
+  "Established the human-versus-robot Scrabble project concept and system architecture.",
+  "Created a premium project showcase and dashboard interface for demonstrations.",
+  "Defined hardware validation categories for sensing, placement, latency, and safety.",
+  "Prepared placeholders for faculty review, team responsibilities, and final documentation.",
+];
+
+function App() {
+  return (
+    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-[var(--text)] focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-[var(--bg)]"
+      >
+        Skip to content
+      </a>
+
+      <Header />
+
+      <main id="main">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/overview" element={<OverviewPage />} />
+          <Route path="/system" element={<SystemPage />} />
+          <Route path="/hardware" element={<HardwarePage />} />
+          <Route path="/team" element={<TeamPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
+
+function Header() {
+  return (
+    <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[rgba(0,0,0,0.88)] backdrop-blur-md">
+      <nav
+        className="mx-auto flex w-[min(1120px,calc(100%_-_32px))] flex-col items-start justify-between gap-4 py-4 sm:flex-row sm:items-center sm:gap-6"
+        aria-label="Primary navigation"
+      >
+        <Link to="/" className="group flex items-center gap-3" aria-label="Scrablify home">
+          <span className="grid h-9 w-9 place-items-center rounded-xl bg-[var(--primary)] text-sm font-extrabold text-[var(--bg)] transition-transform duration-200 group-hover:scale-95">
+            S
+          </span>
+          <span className="text-sm font-extrabold tracking-tight sm:text-base">Scrablify</span>
+        </Link>
+
+        <div className="flex w-full flex-wrap items-center gap-x-5 gap-y-2 text-sm font-semibold text-[var(--muted)] sm:w-auto sm:justify-end">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.href}
+              to={item.href}
+              className={({ isActive }) =>
+                `transition-colors duration-200 hover:text-[var(--text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)] ${
+                  isActive ? "text-[var(--primary)]" : ""
+                }`
+              }
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </div>
+      </nav>
+    </header>
+  );
+}
+
+function HomePage() {
+  return (
+    <>
+      <Hero />
+      <RealTimeMatchDashboard />
+      <ProjectHighlights />
+      <StatisticsSection />
+    </>
+  );
+}
+
+function OverviewPage() {
+  return (
+    <>
+      <PageHeader
+        eyebrow="Overview"
+        title="Project presentation for a human-versus-robot Scrabble system."
+        copy="This page collects the high-level project goals, evaluation context, and measurable presentation placeholders for Scrablify."
+      />
+      <Overview />
+      <DashboardPreview />
+      <TeamAndNextSteps />
+    </>
+  );
+}
+
+function SystemPage() {
+  return (
+    <>
+      <PageHeader
+        eyebrow="System"
+        title="Architecture that connects perception, scoring, motion, and supervision."
+        copy="Use this page to explain the full technical path from physical board input to robot tile placement."
+      />
+      <SystemArchitecture />
+      <Workflow />
+    </>
+  );
+}
+
+function HardwarePage() {
+  return (
+    <>
+      <PageHeader
+        eyebrow="Hardware"
+        title="Subsystem documentation for the robot, board, sensors, and tile handling."
+        copy="Replace placeholders with component selections, CAD screenshots, wiring notes, tolerances, and test data."
+      />
+      <HardwareModules />
+    </>
+  );
+}
+
+function TeamPage() {
+  return (
+    <>
+      <PageHeader
+        eyebrow="Team"
+        title="A focused university robotics team building a physical Scrabble opponent."
+        copy="This page introduces the people, responsibilities, skills, faculty support, and achievements behind the Scrablify hardware project."
+      />
+      <TeamIntroduction />
+      <TeamMemberCards />
+      <TeamStructure />
+      <SkillsMatrix />
+      <FacultyAdvisor />
+      <TeamAchievements />
+    </>
+  );
+}
+
+function NotFoundPage() {
+  return (
+    <section className="mx-auto w-[min(1120px,calc(100%_-_32px))] py-24">
+      <p className="eyebrow">404</p>
+      <h1 className="mt-5 max-w-3xl text-4xl font-extrabold leading-tight tracking-[-0.06em] sm:text-6xl">
+        Page not found.
+      </h1>
+      <p className="mt-6 max-w-2xl text-base leading-8 text-[var(--muted)]">
+        The requested Scrablify page does not exist. Return to the project overview or use the navigation.
+      </p>
+      <Link className="btn-primary mt-8" to="/">
+        Back to home
+      </Link>
+    </section>
+  );
+}
+
+function TeamIntroduction() {
+  return (
+    <Section eyebrow="Team introduction" title="A cross-functional group connecting software, electronics, and physical motion.">
+      <Card className="p-7">
+        <p className="max-w-4xl text-base leading-8 text-[var(--muted)]">
+          Our mission is to turn a familiar board game into a robotics demonstration that is clear,
+          measurable, and technically credible. The team works across sensing, control, mechanics,
+          software, testing, and documentation to present Scrablify as a complete university-level
+          hardware project.
+        </p>
+      </Card>
+    </Section>
+  );
+}
+
+function TeamMemberCards() {
+  return (
+    <Section eyebrow="Team members" title="Roles and contributions across the robotics stack.">
+      <div className="grid gap-4 md:grid-cols-2">
+        {teamMembers.map((member) => (
+          <Card key={member.role} className="p-6">
+            <div className="flex flex-col gap-5 sm:flex-row">
+              <div
+                className="grid h-28 w-28 shrink-0 place-items-center rounded-3xl border border-[var(--border)] bg-[rgba(255,255,255,0.04)] text-xs font-bold text-[var(--muted)]"
+                aria-label={`${member.name} photo placeholder`}
+              >
+                Photo
+              </div>
+              <div>
+                <p className="text-2xl font-extrabold tracking-[-0.04em]">{member.name}</p>
+                <p className="mt-1 text-sm font-bold text-[var(--primary)]">{member.role}</p>
+                <dl className="mt-5 space-y-4 text-sm leading-7">
+                  <div>
+                    <dt className="font-bold text-[var(--text)]">Responsibilities</dt>
+                    <dd className="mt-1 text-[var(--muted)]">{member.responsibilities}</dd>
+                  </div>
+                  <div>
+                    <dt className="font-bold text-[var(--text)]">Technical expertise</dt>
+                    <dd className="mt-1 text-[var(--muted)]">{member.expertise}</dd>
+                  </div>
+                  <div>
+                    <dt className="font-bold text-[var(--text)]">Contribution highlights</dt>
+                    <dd className="mt-1 text-[var(--muted)]">{member.highlights}</dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function TeamStructure() {
+  return (
+    <Section eyebrow="Team structure" title="A simple hierarchy for ownership and communication.">
+      <Card className="p-6">
+        <div className="grid gap-4 text-center">
+          <StructureNode title="Faculty Advisor" subtitle="Guidance, review, and project evaluation" emphasis />
+          <div className="mx-auto h-8 w-px bg-[var(--border)]" aria-hidden="true" />
+          <StructureNode title="Project Integration Lead" subtitle="System planning and milestone coordination" />
+          <div className="mx-auto h-8 w-px bg-[var(--border)]" aria-hidden="true" />
+          <div className="grid gap-4 md:grid-cols-3">
+            <StructureNode title="Hardware Team" subtitle="Mechanism, CAD, electronics" />
+            <StructureNode title="Software Team" subtitle="Dashboard, game logic, telemetry" />
+            <StructureNode title="Testing Team" subtitle="Validation, demo flow, documentation" />
+          </div>
+        </div>
+      </Card>
+    </Section>
+  );
+}
+
+function StructureNode({ title, subtitle, emphasis = false }) {
+  return (
+    <div
+      className={`rounded-3xl border p-5 ${
+        emphasis
+          ? "border-[var(--primary)] bg-[rgba(0,106,78,0.14)]"
+          : "border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.035)]"
+      }`}
+    >
+      <p className="font-extrabold">{title}</p>
+      <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{subtitle}</p>
+    </div>
+  );
+}
+
+function SkillsMatrix() {
+  return (
+    <Section eyebrow="Skills matrix" title="Capability coverage across the project lifecycle.">
+      <Card className="p-6">
+        <div className="grid gap-5">
+          {skillsMatrix.map(([skill, level]) => (
+            <div key={skill} className="grid gap-3 sm:grid-cols-[180px_1fr] sm:items-center">
+              <p className="text-sm font-bold">{skill}</p>
+              <div className="grid grid-cols-5 gap-2" aria-label={`${skill} level ${level} out of 5`}>
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <span
+                    key={index}
+                    className={`h-3 rounded-full ${
+                      index < level ? "bg-[var(--primary)]" : "bg-[rgba(255,255,255,0.08)]"
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </Section>
+  );
+}
+
+function FacultyAdvisor() {
+  return (
+    <Section eyebrow="Faculty advisor" title="Academic guidance for engineering decisions and presentation quality.">
+      <Card className="p-7">
+        <div className="grid gap-6 md:grid-cols-[160px_1fr] md:items-center">
+          <div
+            className="grid aspect-square w-40 place-items-center rounded-[2rem] border border-[var(--border)] bg-[rgba(255,255,255,0.04)] text-sm font-bold text-[var(--muted)]"
+            aria-label="Faculty advisor photo placeholder"
+          >
+            Advisor Photo
+          </div>
+          <div>
+            <p className="text-3xl font-extrabold tracking-[-0.05em]">Faculty Advisor Name</p>
+            <p className="mt-2 text-sm font-bold text-[var(--primary)]">Department / Robotics Lab Placeholder</p>
+            <p className="mt-5 max-w-3xl text-sm leading-7 text-[var(--muted)]">
+              Provides technical review, milestone feedback, hardware safety guidance, and support for
+              presenting Scrablify as a structured university robotics project.
+            </p>
+          </div>
+        </div>
+      </Card>
+    </Section>
+  );
+}
+
+function TeamAchievements() {
+  return (
+    <Section eyebrow="Team achievements" title="Milestones and accomplishments to document before final review.">
+      <div className="grid gap-4 md:grid-cols-2">
+        {achievements.map((achievement, index) => (
+          <Card key={achievement} className="p-6">
+            <span className="text-sm font-extrabold text-[var(--primary)]">0{index + 1}</span>
+            <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{achievement}</p>
+          </Card>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function PageHeader({ eyebrow, title, copy }) {
+  return (
+    <section className="mx-auto w-[min(1120px,calc(100%_-_32px))] pb-4 pt-16 sm:pt-20 lg:pt-24">
+      <p className="eyebrow">{eyebrow}</p>
+      <h1 className="mt-5 max-w-4xl text-balance text-4xl font-extrabold leading-tight tracking-[-0.06em] sm:text-6xl">
+        {title}
+      </h1>
+      <p className="mt-6 max-w-2xl text-base leading-8 text-[var(--muted)]">{copy}</p>
+    </section>
+  );
+}
+
+function Hero() {
+  return (
+    <section className="mx-auto grid w-[min(1120px,calc(100%_-_32px))] items-center gap-14 py-20 md:min-h-[calc(100vh-73px)] md:grid-cols-[1.05fr_0.95fr] lg:py-28">
+      <div className="animate-rise">
+        <p className="eyebrow">First Year Hardware Project</p>
+        <h1 className="mt-5 max-w-4xl text-balance text-5xl font-extrabold leading-[0.94] tracking-[-0.07em] sm:text-6xl lg:text-8xl">
+          Scrablify
+        </h1>
+        <p className="mt-7 max-w-2xl text-lg leading-8 text-[var(--muted)]">
+          A robotics hardware project that lets a human play Scrabble against an automated
+          robot through vision, motion control, embedded systems, and a live match dashboard.
+        </p>
+
+        <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+          <Link className="btn-primary" to="/overview">
+            View Live Dashboard
+          </Link>
+          <Link className="btn-secondary" to="/hardware">
+            Explore Hardware
+          </Link>
+        </div>
+      </div>
+
+      <HeroMediaPlaceholder />
+    </section>
+  );
+}
+
+function HeroMediaPlaceholder() {
+  return (
+    <aside
+      className="animate-rise rounded-[2rem] border border-[var(--border)] bg-[var(--bg-soft)] p-4 delay-100"
+      aria-label="Hero image or video placeholder"
+    >
+      <div className="grid min-h-[420px] place-items-center rounded-[1.5rem] border border-[rgba(255,255,255,0.08)] bg-[var(--bg)] p-6">
+        <div className="w-full max-w-sm text-center">
+          <div className="mx-auto grid aspect-video w-full place-items-center rounded-3xl border border-[var(--border)] bg-[rgba(255,255,255,0.035)]">
+            <div className="grid h-20 w-20 place-items-center rounded-full border border-[var(--border)] text-sm font-extrabold text-[var(--primary)]">
+              Media
+            </div>
+          </div>
+          <p className="mt-6 text-sm font-bold">Hero image / video placeholder</p>
+          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+            Add a final robot-arm demo video, CAD render, or physical prototype photograph here.
+          </p>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
+function RealTimeMatchDashboard() {
+  const humanScore = useAnimatedScore(84, 126);
+  const robotScore = useAnimatedScore(78, 118);
+
+  return (
+    <Section eyebrow="Real-time match dashboard" title="Live game state at a glance.">
+      <Card className="overflow-hidden p-0">
+        <div className="grid lg:grid-cols-[0.95fr_1.05fr]">
+          <div className="border-b border-[var(--border)] p-6 sm:p-8 lg:border-b-0 lg:border-r">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-bold text-[var(--primary)]">Match Status</p>
+                <h3 className="mt-2 text-2xl font-extrabold tracking-[-0.04em]">Robot turn active</h3>
+              </div>
+              <span className="rounded-full border border-[var(--border)] px-3 py-1 text-xs font-bold">
+                Round 7
+              </span>
+            </div>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              <LiveScoreCard label="Human Score" score={humanScore} />
+              <LiveScoreCard label="Robot Score" score={robotScore} />
+            </div>
+
+            <div className="mt-6 rounded-3xl border border-[rgba(255,255,255,0.08)] p-5">
+              <p className="text-sm font-bold">Large score display</p>
+              <div className="mt-4 flex items-end justify-between gap-4">
+                <p className="text-6xl font-extrabold tracking-[-0.08em] sm:text-7xl">{humanScore}</p>
+                <p className="pb-3 text-sm font-bold text-[var(--muted)]">vs</p>
+                <p className="text-6xl font-extrabold tracking-[-0.08em] sm:text-7xl">{robotScore}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6 sm:p-8">
+            <div className="grid gap-4 sm:grid-cols-2">
+              {telemetry.map(([label, value]) => (
+                <StatusRow key={label} label={label} value={value} />
+              ))}
+            </div>
+
+            <div className="mt-8">
+              <p className="text-sm font-bold">Last Action Feed</p>
+              <ol className="mt-4 space-y-3" aria-label="Recent match actions">
+                {matchFeed.map((item, index) => (
+                  <li
+                    key={item}
+                    className="flex gap-3 rounded-2xl border border-[rgba(255,255,255,0.08)] px-4 py-3 text-sm text-[var(--muted)]"
+                  >
+                    <span className="font-extrabold text-[var(--primary)]">0{index + 1}</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </div>
+      </Card>
+    </Section>
+  );
+}
+
+function LiveScoreCard({ label, score }) {
+  return (
+    <div className="rounded-3xl border border-[rgba(255,255,255,0.08)] p-5 transition-transform duration-300 hover:-translate-y-0.5">
+      <p className="text-sm text-[var(--muted)]">{label}</p>
+      <p className="mt-3 text-5xl font-extrabold tracking-[-0.07em]">{score}</p>
+    </div>
+  );
+}
+
+function useAnimatedScore(start, end) {
+  const [score, setScore] = useState(start);
+
+  useEffect(() => {
+    const duration = 1100;
+    const startedAt = performance.now();
+
+    function tick(now) {
+      const progress = Math.min((now - startedAt) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setScore(Math.round(start + (end - start) * eased));
+
+      if (progress < 1) {
+        requestAnimationFrame(tick);
+      }
+    }
+
+    const frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [start, end]);
+
+  return score;
+}
+
+function ProjectHighlights() {
+  return (
+    <Section eyebrow="Project highlights" title="Core engineering disciplines behind the build.">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {highlights.map((item) => (
+          <Card key={item.title} className="p-6">
+            <h3 className="text-xl font-extrabold tracking-[-0.03em]">{item.title}</h3>
+            <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{item.copy}</p>
+          </Card>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function StatisticsSection() {
+  return (
+    <Section eyebrow="Statistics" title="Performance placeholders for the final demo report.">
+      <div className="grid gap-4 md:grid-cols-4">
+        {stats.map(([label, value, detail]) => (
+          <Card key={label} className="p-6">
+            <p className="text-sm font-bold text-[var(--muted)]">{label}</p>
+            <p className="mt-4 text-4xl font-extrabold tracking-[-0.06em]">{value}</p>
+            <p className="mt-4 text-sm leading-6 text-[var(--muted)]">{detail}</p>
+          </Card>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function ProjectPanel() {
+  return (
+    <aside
+      className="animate-rise rounded-[2rem] border border-[var(--border)] bg-[var(--bg-soft)] p-5 delay-100 sm:p-6"
+      aria-label="Scrablify system summary"
+    >
+      <div className="rounded-[1.5rem] border border-[var(--border)] bg-[var(--bg)] p-5">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-bold text-[var(--primary)]">System Preview</p>
+            <p className="mt-1 text-sm text-[var(--muted)]">Robot turn loop</p>
+          </div>
+          <span className="rounded-full border border-[var(--border)] px-3 py-1 text-xs font-bold text-[var(--text)]">
+            Online
+          </span>
+        </div>
+
+        <div className="mt-8 grid grid-cols-5 gap-2" aria-hidden="true">
+          {"SCRABOTWORDSHUMANREADY".slice(0, 25).split("").map((letter, index) => (
+            <span
+              key={`${letter}-${index}`}
+              className={`grid aspect-square place-items-center rounded-lg border text-sm font-extrabold ${
+                index % 6 === 0
+                  ? "border-[var(--primary)] bg-[rgba(0,106,78,0.18)] text-[var(--text)]"
+                  : "border-[rgba(255,255,255,0.12)] bg-[rgba(255,255,255,0.04)] text-[var(--muted)]"
+              }`}
+            >
+              {letter}
+            </span>
+          ))}
+        </div>
+
+        <div className="mt-8 space-y-3">
+          <StatusRow label="Vision scan" value="Board aligned" />
+          <StatusRow label="Robot arm" value="Home position" />
+          <StatusRow label="Next action" value="Await human move" />
+        </div>
+      </div>
+    </aside>
+  );
+}
+
+function StatusRow({ label, value }) {
+  return (
+    <div className="flex items-center justify-between gap-4 rounded-2xl border border-[rgba(255,255,255,0.08)] px-4 py-3">
+      <span className="text-sm text-[var(--muted)]">{label}</span>
+      <span className="text-sm font-bold">{value}</span>
+    </div>
+  );
+}
+
+function Overview() {
+  return (
+    <Section id="overview" eyebrow="Project overview" title="A clear presentation layer for a complex physical system.">
+      <div className="grid gap-4 md:grid-cols-4">
+        {metrics.map((metric) => (
+          <Card key={metric.label} className="p-6">
+            <p className="text-3xl font-extrabold tracking-[-0.05em]">{metric.value}</p>
+            <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{metric.label}</p>
+          </Card>
+        ))}
+      </div>
+      <p className="mt-8 max-w-3xl text-base leading-8 text-[var(--muted)]">
+        This page is designed for project evaluation, lab demonstrations, and portfolio review. Replace
+        each placeholder with measured values, component choices, diagrams, and team documentation as
+        the hardware matures.
+      </p>
+    </Section>
+  );
+}
+
+function SystemArchitecture() {
+  return (
+    <Section id="system" eyebrow="System architecture" title="Four layers from board perception to robot action.">
+      <div className="grid gap-4 lg:grid-cols-4">
+        {architecture.map((item, index) => (
+          <Card key={item.title} className="p-6">
+            <span className="text-sm font-extrabold text-[var(--primary)]">0{index + 1}</span>
+            <h3 className="mt-5 text-xl font-extrabold tracking-[-0.03em]">{item.title}</h3>
+            <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{item.detail}</p>
+          </Card>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function HardwareModules() {
+  return (
+    <Section id="hardware" eyebrow="Hardware modules" title="Document each subsystem with engineering intent.">
+      <div className="grid gap-4 md:grid-cols-2">
+        {hardwareModules.map((module) => (
+          <Card key={module.name} className="p-6">
+            <div className="flex items-start justify-between gap-4">
+              <h3 className="text-xl font-extrabold tracking-[-0.03em]">{module.name}</h3>
+              <span className="shrink-0 rounded-full border border-[var(--border)] px-3 py-1 text-xs font-bold text-[var(--primary)]">
+                {module.status}
+              </span>
+            </div>
+            <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{module.copy}</p>
+          </Card>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function DashboardPreview() {
+  return (
+    <Section id="dashboard" eyebrow="Dashboard preview" title="Operator interface for the live match.">
+      <Card className="overflow-hidden p-0">
+        <div className="grid gap-0 lg:grid-cols-[0.8fr_1.2fr]">
+          <div className="border-b border-[var(--border)] p-6 lg:border-b-0 lg:border-r">
+            <div className="flex items-center justify-between">
+              <p className="font-extrabold">Scoreboard</p>
+              <span className="rounded-full bg-[rgba(0,106,78,0.16)] px-3 py-1 text-xs font-bold text-[var(--primary)]">
+                Demo mode
+              </span>
+            </div>
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <ScoreCard label="Human" score="84" />
+              <ScoreCard label="Robot" score="78" />
+            </div>
+            <div className="mt-6 space-y-3">
+              <StatusRow label="Camera" value="Ready" />
+              <StatusRow label="Gripper" value="Idle" />
+              <StatusRow label="Move queue" value="Empty" />
+            </div>
+          </div>
+
+          <div className="p-6">
+            <div className="flex items-center justify-between gap-4">
+              <p className="font-extrabold">Board state</p>
+              <p className="text-sm text-[var(--muted)]">Round 7 placeholder</p>
+            </div>
+            <div className="mt-6 grid grid-cols-7 gap-2" aria-label="Dashboard board preview">
+              {Array.from({ length: 49 }).map((_, index) => (
+                <span
+                  key={index}
+                  className={`grid aspect-square place-items-center rounded-lg border text-xs font-extrabold ${
+                    [0, 8, 16, 24, 32, 40, 48].includes(index)
+                      ? "border-[var(--primary)] bg-[rgba(0,106,78,0.18)] text-[var(--text)]"
+                      : "border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.035)] text-[var(--muted)]"
+                  }`}
+                >
+                  {["S", "C", "R", "A", "B", "O", "T"][[0, 8, 16, 24, 32, 40, 48].indexOf(index)] || ""}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Card>
+    </Section>
+  );
+}
+
+function ScoreCard({ label, score }) {
+  return (
+    <div className="rounded-2xl border border-[rgba(255,255,255,0.08)] p-5">
+      <p className="text-sm text-[var(--muted)]">{label}</p>
+      <p className="mt-2 text-4xl font-extrabold tracking-[-0.06em]">{score}</p>
+    </div>
+  );
+}
+
+function Workflow() {
+  return (
+    <Section id="workflow" eyebrow="Workflow" title="A repeatable turn cycle for demonstration and testing.">
+      <ol className="grid gap-4 md:grid-cols-4">
+        {workflow.map((step, index) => (
+          <Card key={step} className="p-6">
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-[var(--primary)] text-sm font-extrabold text-[var(--bg)]">
+              {index + 1}
+            </span>
+            <p className="mt-5 text-sm leading-7 text-[var(--muted)]">{step}</p>
+          </Card>
+        ))}
+      </ol>
+    </Section>
+  );
+}
+
+function TeamAndNextSteps() {
+  return (
+    <Section eyebrow="Presentation ready" title="Built for juries, demos, and future iteration.">
+      <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+        <Card className="p-7">
+          <h3 className="text-2xl font-extrabold tracking-[-0.04em]">Team documentation placeholder</h3>
+          <p className="mt-4 text-sm leading-7 text-[var(--muted)]">
+            Add team member roles, contribution areas, mentor notes, parts list ownership, and final
+            presentation responsibilities. Keep this section concise and evidence-driven.
+          </p>
+        </Card>
+        <Card className="p-7">
+          <h3 className="text-2xl font-extrabold tracking-[-0.04em]">Next engineering milestones</h3>
+          <ul className="mt-4 space-y-3 text-sm leading-7 text-[var(--muted)]">
+            <li>Finalize camera calibration and board-state accuracy tests.</li>
+            <li>Document gripper tolerance and failed-pickup recovery behavior.</li>
+            <li>Connect live telemetry once hardware APIs are available.</li>
+          </ul>
+        </Card>
+      </div>
+    </Section>
+  );
+}
+
+function Section({ id, eyebrow, title, children }) {
+  return (
+    <section id={id} className="mx-auto w-[min(1120px,calc(100%_-_32px))] py-16 sm:py-20 lg:py-24">
+      <div className="mb-10 max-w-3xl">
+        <p className="eyebrow">{eyebrow}</p>
+        <h2 className="mt-4 text-balance text-3xl font-extrabold leading-tight tracking-[-0.055em] sm:text-5xl">
+          {title}
+        </h2>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function Card({ className = "", children }) {
+  return (
+    <article className={`rounded-[1.5rem] border border-[var(--border)] bg-[rgba(255,255,255,0.04)] ${className}`}>
+      {children}
+    </article>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="mx-auto grid w-[min(1120px,calc(100%_-_32px))] gap-4 border-t border-[var(--border)] py-8 text-sm text-[var(--muted)] md:grid-cols-3">
+      <div>
+        <p className="font-bold text-[var(--text)]">Team Information</p>
+        <p className="mt-2">Scrablify robotics project team placeholder</p>
+      </div>
+      <div>
+        <p className="font-bold text-[var(--text)]">Faculty Information</p>
+        <p className="mt-2">Faculty mentor / department placeholder</p>
+      </div>
+      <div>
+        <p className="font-bold text-[var(--text)]">Project Year</p>
+        <p className="mt-2">First Year Hardware Project</p>
+      </div>
+    </footer>
+  );
+}
+
+export default App;

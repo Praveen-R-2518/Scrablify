@@ -1,0 +1,34 @@
+{
+  "name": "scrablify",
+  "version": "1.0.0",
+  "description": "Premium hardware project showcase and dashboard for a human-vs-robot Scrabble system.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Praveen-R-2518/Scrablify.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Praveen-R-2518/Scrablify/issues"
+  },
+  "homepage": "https://github.com/Praveen-R-2518/Scrablify#readme",
+  "dependencies": {
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-router-dom": "^7.18.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.1",
+    "@vitejs/plugin-react": "^6.0.3",
+    "tailwindcss": "^4.3.1",
+    "vite": "^8.1.0"
+  }
+}

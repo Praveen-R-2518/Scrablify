@@ -3,80 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scrablify | Home</title>
+  <meta name="description" content="Scrablify is a robotics hardware project where a human plays Scrabble against an automated robot system.">
+  <title>Scrablify | Robotics Hardware Showcase</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="site-header">
-    <nav class="nav">
-      <a class="brand" href="index.html" aria-label="Scrablify home">
-        <span class="brand-mark">S</span>
-        <span>Scrablify</span>
-      </a>
-      <div class="nav-links" aria-label="Primary navigation">
-        <a href="dashboard.html">Dashboard</a>
-        <a href="hardware.html">Hardware</a>
-        <a href="workflow.html">Workflow</a>
-        <a href="team.html">Team</a>
-      </div>
-    </nav>
-  </header>
-
-  <main>
-    <section class="hero section">
-      <div class="hero-copy">
-        <p class="eyebrow">First Year Hardware Project</p>
-        <h1>Play Scrabble against a real robot.</h1>
-        <p class="hero-text">
-          Scrablify combines a physical Scrabble board, a robot move system, and a live web dashboard so a human player can challenge an automated opponent.
-        </p>
-        <div class="hero-actions">
-          <a class="button primary" href="dashboard.html">Open Dashboard</a>
-          <a class="button secondary" href="hardware.html">Explore Build</a>
-        </div>
-        <div class="stats-row" aria-label="Project highlights">
-          <div>
-            <strong>2</strong>
-            <span>Players</span>
-          </div>
-          <div>
-            <strong>15x15</strong>
-            <span>Board Grid</span>
-          </div>
-          <div>
-            <strong>Live</strong>
-            <span>Robot Turns</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="hero-card" aria-label="Scrablify system preview">
-        <div class="robot-orbit">
-          <div class="robot-head">
-            <span class="eye"></span>
-            <span class="eye"></span>
-          </div>
-          <div class="robot-arm"></div>
-        </div>
-        <div class="mini-board" aria-hidden="true">
-          <span>S</span><span>C</span><span>R</span><span>A</span><span>B</span>
-          <span>L</span><span>I</span><span>F</span><span>Y</span><span>+</span>
-          <span>H</span><span>U</span><span>M</span><span>A</span><span>N</span>
-          <span>R</span><span>O</span><span>B</span><span>O</span><span>T</span>
-          <span>W</span><span>O</span><span>R</span><span>D</span><span>S</span>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <span>Scrablify Dashboard</span>
-    <span>Human vs Robot Scrabble Project</span>
-  </footer>
-
-  <script src="script.js"></script>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>

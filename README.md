@@ -1,15 +1,31 @@
 # Scrablify
 
-Scrablify is a first-year hardware project website and dashboard for a human-vs-robot Scrabble game.
+Scrablify is a premium React/Tailwind showcase website for a first-year robotics hardware project where a human plays Scrabble against a robot.
 
-## Website
+## Development
 
-Open `index.html` in a browser to view the landing page, then use the navigation bar to visit the separate Dashboard, Hardware, Workflow, and Team pages.
+Install dependencies:
 
-The current dashboard includes:
+```bash
+npm install
+```
 
-- Human and robot score tracking
-- Scrabble board preview
-- Robot arm, tile pickup, and camera scan status
-- Recent move history
-- A simulated next-move button for demo presentations
+Start the local development server:
+
+```bash
+npm run dev
+```
+
+Build for production:
+
+```bash
+npm run build
+```
+
+## Current Sections
+
+- `/` home and project introduction
+- `/overview` project overview, technical positioning, and dashboard preview
+- `/system` system architecture and turn workflow
+- `/hardware` hardware module placeholders
+- `/team` team members, structure, skills matrix, advisor, and achievements
