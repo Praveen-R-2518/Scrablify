@@ -40,24 +40,121 @@ const architecture = [
 
 const hardwareModules = [
   {
-    name: "Board Sensing",
-    status: "Prototype",
-    copy: "Placeholder for camera module, calibration notes, tile recognition method, and lighting constraints.",
+    name: "ESP32 Microcontroller",
+    purpose: "Handles connected control tasks, fast IO coordination, and communication with the wider system.",
+    specifications: ["3.3V logic", "Wi-Fi/Bluetooth capable", "Serial communication support"],
+    role: "Coordinates game-side electronics and can bridge sensor, display, and software control signals.",
   },
   {
-    name: "Tile Handling",
-    status: "In progress",
-    copy: "Placeholder for gripper design, tile pickup tolerance, rack alignment, and placement repeatability.",
+    name: "Arduino Uno + CNC Shield V3",
+    purpose: "Provides the dedicated motion-control layer for the X-Y plotter mechanism.",
+    specifications: ["5V logic", "CNC Shield V3 expansion", "Stepper driver slots for axis control"],
+    role: "Receives movement commands and drives the plotter axes for accurate tile positioning.",
   },
   {
-    name: "Robot Motion",
-    status: "Prototype",
-    copy: "Placeholder for servo/stepper selection, movement envelope, homing routine, and safety limits.",
+    name: "NEMA17 Stepper Motors",
+    purpose: "Move the plotter head across the Scrabble board with repeatable X-Y positioning.",
+    specifications: ["Stepper-based positioning", "X-axis and Y-axis movement", "Driven through A4988 modules"],
+    role: "Forms the mechanical motion backbone for robotic tile placement.",
   },
   {
-    name: "Game Engine",
-    status: "Planned",
-    copy: "Placeholder for dictionary source, scoring rules, move search logic, and invalid-move handling.",
+    name: "A4988 Stepper Drivers",
+    purpose: "Convert controller step and direction signals into motor phase currents.",
+    specifications: ["Microstepping support", "Current-limit adjustment", "CNC Shield compatible"],
+    role: "Sits between the CNC Shield and NEMA17 motors to control speed, direction, and torque.",
+  },
+  {
+    name: "12V Electromagnet + Z-Axis",
+    purpose: "Picks up and releases Scrabble tiles during robotic placement.",
+    specifications: ["12V electromagnet", "Vertical pickup/drop motion", "Tile grip calibration required"],
+    role: "Acts as the end effector that physically transfers each tile onto the board.",
+  },
+  {
+    name: "MG995 Servo Motor",
+    purpose: "Supports controlled mechanical movement for tile handling or auxiliary actuation.",
+    specifications: ["High-torque servo", "PWM control", "Mechanical linkage support"],
+    role: "Adds controlled angular motion where the system needs compact actuation.",
+  },
+  {
+    name: "Web Camera",
+    purpose: "Captures board images for OCR-based letter and word recognition.",
+    specifications: ["Board-facing camera", "Image capture for Python processing", "Lighting-sensitive calibration"],
+    role: "Feeds visual data to Tesseract OCR and dictionary validation logic.",
+  },
+  {
+    name: "ST7920 Graphical LCD + Buttons",
+    purpose: "Displays timer, startup messages, challenge menus, and user navigation options.",
+    specifications: ["Graphical LCD display", "Push buttons for Power, Countdown, Challenge, Previous, Next"],
+    role: "Provides the local player interface for match control and challenge handling.",
+  },
+  {
+    name: "RGB LED Strip",
+    purpose: "Highlights challenged words and gives visual feedback during gameplay.",
+    specifications: ["Addressable visual feedback", "Board highlight zones", "Microcontroller controlled"],
+    role: "Makes challenge status and selected word positions visible to players.",
+  },
+  {
+    name: "Tile Distribution Cart",
+    purpose: "Moves tiles between the human and robotic player positions.",
+    specifications: ["1000RPM 12V gear motor", "L298N motor driver", "Relay-assisted power switching"],
+    role: "Automates tile distribution and supports repeatable rack-to-board workflow.",
+  },
+  {
+    name: "Power Regulation",
+    purpose: "Distributes stable voltages to motors, logic boards, display, and actuators.",
+    specifications: ["12V power pack", "Buck converter", "Separate motor and logic rails"],
+    role: "Keeps high-current actuators isolated from sensitive control electronics.",
+  },
+  {
+    name: "Rack and Pinion Mechanism",
+    purpose: "Provides mechanical translation for board lift, tile feed, or positioning movement.",
+    specifications: ["Linear mechanical motion", "Actuator integration", "Alignment-dependent assembly"],
+    role: "Converts motor rotation into controlled linear motion for the physical system.",
+  },
+];
+
+const hardwareOverview = [
+  ["Motion", "X-Y plotter, NEMA17 motors, A4988 drivers, CNC Shield V3"],
+  ["Pickup", "12V electromagnet, Z-axis movement, MG995 servo support"],
+  ["Perception", "Web camera, Tesseract OCR, board image calibration"],
+  ["Interface", "ST7920 LCD, push buttons, RGB LED challenge highlighting"],
+];
+
+const connectionFlow = [
+  "Player input enters through buttons and local LCD menu controls.",
+  "Camera captures the board and sends images to the software layer for OCR and word validation.",
+  "Validated commands are sent over serial communication to ESP32 and Arduino control boards.",
+  "Arduino Uno with CNC Shield drives stepper motors through A4988 drivers for X-Y movement.",
+  "Electromagnet, servo, LED strip, relay, and cart motor execute the physical feedback and tile flow.",
+];
+
+const powerRails = [
+  ["12V input", "Power pack feeds motors, electromagnet, relay, and high-current actuator loads."],
+  ["Regulated logic", "Buck converter steps voltage down for controller boards, LCD, sensors, and signal electronics."],
+  ["Motor branch", "Stepper motors and gear motor stay on a separated high-current path to reduce noise."],
+  ["Control branch", "ESP32, Arduino, buttons, display, camera link, and LED control signals share stable logic power."],
+];
+
+const hardwareChallenges = [
+  {
+    challenge: "Accurate tile placement",
+    solution: "Calibrated X-Y stepper movement, pickup/drop positions, and plotter alignment before full gameplay tests.",
+  },
+  {
+    challenge: "Reliable tile gripping",
+    solution: "Used an electromagnet-based pickup system with Z-axis movement and repeated pickup/drop calibration.",
+  },
+  {
+    challenge: "OCR accuracy under lighting changes",
+    solution: "Integrated a fixed webcam viewpoint and planned lighting/OCR tuning for clearer board captures.",
+  },
+  {
+    challenge: "Motor noise and power stability",
+    solution: "Separated 12V actuator loads from regulated logic power using buck conversion and driver modules.",
+  },
+  {
+    challenge: "Player challenge visibility",
+    solution: "Added LCD navigation and RGB LED highlighting so challenged words can be reviewed clearly.",
   },
 ];
 
@@ -277,11 +374,15 @@ function HardwarePage() {
   return (
     <>
       <PageHeader
-        eyebrow="Hardware"
-        title="Subsystem documentation for the robot, board, sensors, and tile handling."
-        copy="Replace placeholders with component selections, CAD screenshots, wiring notes, tolerances, and test data."
+        eyebrow="Hardware architecture"
+        title="Electronics, motion control, sensing, and power systems behind Scrablify."
+        copy="A technical view of the components used in the smart Scrabble board: plotter motion, electromagnetic tile pickup, OCR sensing, challenge controls, LED feedback, and regulated power distribution."
       />
+      <HardwareOverview />
       <HardwareModules />
+      <SystemConnections />
+      <PowerDistribution />
+      <HardwareChallenges />
     </>
   );
 }
@@ -1018,24 +1119,208 @@ function SystemArchitecture() {
   );
 }
 
+function HardwareOverview() {
+  return (
+    <Section id="hardware-overview" eyebrow="Hardware overview" title="A smart board built from motion, sensing, interaction, and power subsystems.">
+      <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
+        <Card className="p-7">
+          <p className="text-base leading-8 text-[var(--muted)]">
+            Scrablify combines an X-Y plotter, electromagnetic tile pickup, OCR-based board sensing,
+            a local LCD challenge interface, LED highlighting, and regulated actuator power. The hardware
+            is organized so gameplay decisions from the software layer can become physical movement on
+            the Scrabble board.
+          </p>
+          <div className="mt-7 grid gap-3 sm:grid-cols-2">
+            {hardwareOverview.map(([label, detail]) => (
+              <div key={label} className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.025)] p-4">
+                <p className="text-sm font-extrabold text-[var(--primary)]">{label}</p>
+                <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{detail}</p>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <Card className="overflow-hidden p-0">
+          <div className="grid min-h-full place-items-center border-b border-[rgba(255,255,255,0.08)] bg-[radial-gradient(circle_at_top,rgba(0,106,78,0.24),transparent_62%)] p-8">
+            <div className="grid w-full max-w-sm grid-cols-3 gap-3 text-center text-xs font-extrabold text-[var(--muted)]">
+              {["Camera", "LCD", "LEDs", "ESP32", "Arduino", "Drivers", "X-Y Axis", "Magnet", "Cart"].map((item) => (
+                <span key={item} className="rounded-2xl border border-[var(--border)] bg-[rgba(0,0,0,0.35)] px-3 py-4">
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="p-6">
+            <p className="text-sm font-extrabold text-[var(--primary)]">Architecture Placeholder</p>
+            <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
+              Replace this with your final block diagram, CAD render, or annotated hardware photo.
+            </p>
+          </div>
+        </Card>
+      </div>
+    </Section>
+  );
+}
+
 function HardwareModules() {
   return (
-    <Section id="hardware" eyebrow="Hardware modules" title="Document each subsystem with engineering intent.">
-      <div className="grid gap-4 md:grid-cols-2">
+    <Section id="hardware" eyebrow="Components grid" title="Component cards with purpose, specifications, and system role.">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {hardwareModules.map((module) => (
-          <Card key={module.name} className="p-6">
-            <div className="flex items-start justify-between gap-4">
-              <h3 className="text-xl font-extrabold tracking-[-0.03em]">{module.name}</h3>
-              <span className="shrink-0 rounded-full border border-[var(--border)] px-3 py-1 text-xs font-bold text-[var(--primary)]">
-                {module.status}
-              </span>
+          <Card key={module.name} className="flex flex-col overflow-hidden">
+            <div className="grid aspect-[16/9] place-items-center border-b border-[rgba(255,255,255,0.08)] bg-[linear-gradient(135deg,rgba(0,106,78,0.22),rgba(255,255,255,0.035))]">
+              <div className="rounded-2xl border border-dashed border-[rgba(255,255,255,0.22)] px-5 py-4 text-center">
+                <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[var(--primary)]">Image</p>
+                <p className="mt-1 text-sm font-bold text-[var(--muted)]">Component placeholder</p>
+              </div>
             </div>
-            <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{module.copy}</p>
+            <div className="flex flex-1 flex-col p-6">
+              <h3 className="text-xl font-extrabold tracking-[-0.03em]">{module.name}</h3>
+              <InfoBlock title="Purpose" copy={module.purpose} />
+              <div className="mt-5">
+                <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--primary)]">Specifications</p>
+                <ul className="mt-3 space-y-2 text-sm leading-6 text-[var(--muted)]">
+                  {module.specifications.map((spec) => (
+                    <li key={spec} className="flex gap-2">
+                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--primary)]" />
+                      <span>{spec}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <InfoBlock title="Role in system" copy={module.role} />
+            </div>
           </Card>
         ))}
       </div>
     </Section>
   );
+}
+
+function SystemConnections() {
+  return (
+    <Section id="system-connections" eyebrow="System connections" title="Control wiring and data flow from player action to robot movement.">
+      <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+        <Card className="p-6">
+          <p className="text-sm font-extrabold text-[var(--primary)]">Wiring Architecture Visualization</p>
+          <div className="mt-6 grid gap-4 text-center text-sm font-bold text-[var(--muted)]">
+            <ConnectionNode label="Camera + Buttons" />
+            <ConnectionArrow />
+            <ConnectionNode label="Python OCR + Game Logic" emphasis />
+            <ConnectionArrow />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <ConnectionNode label="ESP32 IO Control" />
+              <ConnectionNode label="Arduino + CNC Shield" />
+            </div>
+            <ConnectionArrow />
+            <div className="grid gap-3 sm:grid-cols-3">
+              <ConnectionNode label="Motors" />
+              <ConnectionNode label="Electromagnet" />
+              <ConnectionNode label="LCD + LEDs" />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <p className="text-sm font-extrabold text-[var(--primary)]">Data Flow Explanation</p>
+          <ol className="mt-6 space-y-3">
+            {connectionFlow.map((step, index) => (
+              <li key={step} className="grid grid-cols-[36px_1fr] gap-3 rounded-2xl border border-[rgba(255,255,255,0.08)] p-4">
+                <span className="grid h-9 w-9 place-items-center rounded-full bg-[var(--primary)] text-sm font-extrabold text-[var(--bg)]">
+                  {index + 1}
+                </span>
+                <p className="text-sm leading-7 text-[var(--muted)]">{step}</p>
+              </li>
+            ))}
+          </ol>
+        </Card>
+      </div>
+    </Section>
+  );
+}
+
+function PowerDistribution() {
+  return (
+    <Section id="power-distribution" eyebrow="Power distribution" title="12V actuator power regulated into stable logic and control branches.">
+      <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
+        <Card className="p-6">
+          <p className="text-sm font-extrabold text-[var(--primary)]">Power Flow Diagram</p>
+          <div className="mt-6 rounded-3xl border border-[rgba(255,255,255,0.08)] p-5">
+            <div className="grid gap-3">
+              <ConnectionNode label="12V Power Pack" emphasis />
+              <ConnectionArrow />
+              <div className="grid gap-3 sm:grid-cols-2">
+                <ConnectionNode label="Motor / Magnet Rail" />
+                <ConnectionNode label="Buck Converter" />
+              </div>
+              <ConnectionArrow />
+              <div className="grid gap-3 sm:grid-cols-3">
+                <ConnectionNode label="Steppers + Gear Motor" />
+                <ConnectionNode label="Arduino / ESP32" />
+                <ConnectionNode label="LCD / LEDs / Buttons" />
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <p className="text-sm font-extrabold text-[var(--primary)]">Voltage Regulation Explanation</p>
+          <div className="mt-6 grid gap-3">
+            {powerRails.map(([label, detail]) => (
+              <div key={label} className="rounded-2xl border border-[rgba(255,255,255,0.08)] p-4">
+                <p className="font-extrabold text-[var(--text)]">{label}</p>
+                <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{detail}</p>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+    </Section>
+  );
+}
+
+function HardwareChallenges() {
+  return (
+    <Section id="hardware-challenges" eyebrow="Hardware challenges" title="Engineering issues found during build and the solutions used.">
+      <div className="grid gap-4 md:grid-cols-2">
+        {hardwareChallenges.map((item) => (
+          <Card key={item.challenge} className="p-6">
+            <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--primary)]">Challenge</p>
+            <h3 className="mt-3 text-xl font-extrabold tracking-[-0.03em]">{item.challenge}</h3>
+            <p className="mt-5 text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--primary)]">Solution</p>
+            <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{item.solution}</p>
+          </Card>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function InfoBlock({ title, copy }) {
+  return (
+    <div className="mt-5">
+      <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--primary)]">{title}</p>
+      <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{copy}</p>
+    </div>
+  );
+}
+
+function ConnectionNode({ label, emphasis = false }) {
+  return (
+    <div
+      className={`rounded-2xl border px-4 py-3 ${
+        emphasis
+          ? "border-[var(--primary)] bg-[rgba(0,106,78,0.16)] text-[var(--text)]"
+          : "border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.025)]"
+      }`}
+    >
+      {label}
+    </div>
+  );
+}
+
+function ConnectionArrow() {
+  return <div className="mx-auto h-7 w-px bg-[var(--border)]" aria-hidden="true" />;
 }
 
 function Workflow() {
@@ -1106,15 +1391,15 @@ function Footer() {
     <footer className="mx-auto grid w-[min(1120px,calc(100%_-_32px))] gap-4 border-t border-[var(--border)] py-8 text-sm text-[var(--muted)] md:grid-cols-3">
       <div>
         <p className="font-bold text-[var(--text)]">Team Information</p>
-        <p className="mt-2">Scrablify robotics project team placeholder</p>
+        <p className="mt-2">First Year Microcontroller Project</p>
       </div>
       <div>
         <p className="font-bold text-[var(--text)]">Faculty Information</p>
-        <p className="mt-2">Faculty mentor / department placeholder</p>
+        <p className="mt-2">Information Technology</p>
       </div>
       <div>
         <p className="font-bold text-[var(--text)]">Project Year</p>
-        <p className="mt-2">First Year Hardware Project</p>
+        <p className="mt-2">First Year (24 Batch)</p>
       </div>
     </footer>
   );
