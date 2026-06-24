@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, NavLink, Route, Routes } from "react-router-dom";
 
 const navItems = [
@@ -110,32 +110,29 @@ const stats = [
 
 const teamMembers = [
   {
-    name: "Team Lead",
-    role: "Project Integration Lead",
-    responsibilities: "Coordinates subsystem milestones, demo planning, and system-level integration.",
-    expertise: "Systems thinking, robotics workflow, technical communication",
-    highlights: "Defined the turn-cycle architecture and organized validation checkpoints.",
+    name: "Praveen R.",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    color: "#6EE7B7"
   },
   {
-    name: "Embedded Engineer",
-    role: "Controls and Firmware",
-    responsibilities: "Develops microcontroller logic, actuator control, and hardware status routines.",
-    expertise: "Embedded C, PWM control, sensor interfacing",
-    highlights: "Built placeholders for robot readiness states and safe return-to-home behavior.",
+    name: "Kumara K.R.K.",
+    description: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    color: "#3B82F6"
   },
   {
-    name: "Mechanical Designer",
-    role: "Robot Mechanism and CAD",
-    responsibilities: "Designs tile handling, gripper geometry, rack alignment, and board interaction parts.",
-    expertise: "CAD modeling, tolerance planning, mechanism design",
-    highlights: "Documented early gripper requirements for reliable tile pickup and placement.",
+    name: "Fernando A.R.S.P.",
+    description: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.",
+    color: "#F472B6"
   },
   {
-    name: "Software Engineer",
-    role: "Dashboard and Game Logic",
-    responsibilities: "Builds the operator dashboard, match state UI, and scoring workflow placeholders.",
-    expertise: "React, UI engineering, game-state modeling",
-    highlights: "Implemented the live dashboard preview and match telemetry presentation.",
+    name: "Waththegedara M.C.",
+    description: "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.",
+    color: "#FBBF24"
+  },
+  {
+    name: "Peiris M.R.R.A.N.",
+    description: "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa.",
+    color: "#34D399"
   },
 ];
 
@@ -191,10 +188,12 @@ function Header() {
         aria-label="Primary navigation"
       >
         <Link to="/" className="group flex items-center gap-3" aria-label="Scrablify home">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-[var(--primary)] text-sm font-extrabold text-[var(--bg)] transition-transform duration-200 group-hover:scale-95">
-            S
-          </span>
-          <span className="text-sm font-extrabold tracking-tight sm:text-base">Scrablify</span>
+          <img 
+            src="/assets/logo.png" 
+            alt="Scrablify Logo" 
+            className="h-9 w-auto transition-transform duration-200 group-hover:scale-95"
+            style={{ filter: 'brightness(0) invert(1)' }}
+          />
         </Link>
 
         <div className="flex w-full flex-wrap items-center gap-x-5 gap-y-2 text-sm font-semibold text-[var(--muted)] sm:w-auto sm:justify-end">
@@ -270,14 +269,90 @@ function HardwarePage() {
   );
 }
 
+function ParticleCanvas() {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let animationFrameId;
+    let particles = [];
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vx = (Math.random() - 0.5) * 0.3;
+        this.vy = (Math.random() - 0.5) * 0.3;
+        this.radius = Math.random() * 1.5 + 0.3;
+        this.alpha = Math.random() * 0.4 + 0.05;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x < 0) this.x = canvas.width;
+        if (this.x > canvas.width) this.x = 0;
+        if (this.y < 0) this.y = canvas.height;
+        if (this.y > canvas.height) this.y = 0;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(110, 231, 183, ${this.alpha})`;
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < 70; i++) {
+      particles.push(new Particle());
+    }
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      animationFrameId = requestAnimationFrame(animate);
+    };
+    animate();
+
+    return () => {
+      window.removeEventListener('resize', resize);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 pointer-events-none z-[-1]"
+      style={{ opacity: 0.6 }}
+    />
+  );
+}
+
 function TeamPage() {
   return (
     <>
-      <PageHeader
-        eyebrow="Team"
-        title="A focused university robotics team building a physical Scrabble opponent."
-        copy="This page introduces the people, responsibilities, skills, faculty support, and achievements behind the Scrablify hardware project."
-      />
+      <ParticleCanvas />
+      <section className="mx-auto w-[min(1120px,calc(100%_-_32px))] pb-4 pt-16 sm:pt-20 lg:pt-24 text-center flex flex-col items-center">
+        <p className="eyebrow">Team</p>
+        <h1 className="mt-5 max-w-4xl text-balance text-4xl font-extrabold leading-tight tracking-[-0.06em] sm:text-6xl text-white">
+          Meet the Scrablify Team
+        </h1>
+        <p className="mt-6 max-w-2xl text-base leading-8 text-[var(--muted)]">
+          This page introduces the people, responsibilities, skills, faculty support, and achievements behind the Scrablify hardware project.
+        </p>
+      </section>
       <TeamIntroduction />
       <TeamMemberCards />
       <TeamStructure />
@@ -321,38 +396,64 @@ function TeamIntroduction() {
 }
 
 function TeamMemberCards() {
+  const handleMouseMoveCard = (e, cardElement) => {
+    if (!cardElement) return;
+    const rect = cardElement.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    cardElement.style.transform = `perspective(600px) rotateY(${x * 14}deg) rotateX(${-y * 10}deg) scale(1.02)`;
+  };
+
+  const handleMouseLeaveCard = (cardElement) => {
+    if (!cardElement) return;
+    cardElement.style.transform = '';
+  };
+
   return (
     <Section eyebrow="Team members" title="Roles and contributions across the robotics stack.">
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="flex flex-wrap justify-center gap-6">
         {teamMembers.map((member) => (
-          <Card key={member.role} className="p-6">
-            <div className="flex flex-col gap-5 sm:flex-row">
-              <div
-                className="grid h-28 w-28 shrink-0 place-items-center rounded-3xl border border-[var(--border)] bg-[rgba(255,255,255,0.04)] text-xs font-bold text-[var(--muted)]"
-                aria-label={`${member.name} photo placeholder`}
-              >
-                Photo
+          <div key={member.role} className="team-card-container w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+            <Card 
+              className="p-6 h-full team-card-3d relative overflow-hidden group"
+              onMouseMove={(e) => handleMouseMoveCard(e, e.currentTarget)}
+              onMouseLeave={(e) => handleMouseLeaveCard(e.currentTarget)}
+            >
+              <div 
+                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[140px] h-[80px] rounded-[100%] blur-[30px] opacity-0 transition-opacity duration-500 group-hover:opacity-50 pointer-events-none"
+                style={{ backgroundColor: member.color }}
+              />
+              <div className="flex flex-col gap-5 items-center text-center">
+                <div className="avatar-container">
+                  <div 
+                    className="avatar-ring" 
+                    style={{ color: member.color }}
+                  />
+                  <img 
+                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=080A12&color=${member.color.replace('#', '')}&size=112`} 
+                    alt={member.name}
+                    className="w-full h-full rounded-full object-cover border border-[var(--border)] relative z-10"
+                  />
+                </div>
+                <div>
+                  <p className="text-2xl font-extrabold tracking-[-0.04em]">{member.name}</p>
+                  
+                  <div className="flex justify-center gap-4 mt-4">
+                    <a href="#" className="text-[var(--muted)] hover:text-white transition-colors" aria-label="LinkedIn">
+                      <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                    </a>
+                    <a href="#" className="text-[var(--muted)] hover:text-white transition-colors" aria-label="GitHub">
+                      <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    </a>
+                  </div>
+
+                  <p className="mt-5 text-sm leading-7 text-[var(--muted)] text-left">
+                    {member.description}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-2xl font-extrabold tracking-[-0.04em]">{member.name}</p>
-                <p className="mt-1 text-sm font-bold text-[var(--primary)]">{member.role}</p>
-                <dl className="mt-5 space-y-4 text-sm leading-7">
-                  <div>
-                    <dt className="font-bold text-[var(--text)]">Responsibilities</dt>
-                    <dd className="mt-1 text-[var(--muted)]">{member.responsibilities}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-bold text-[var(--text)]">Technical expertise</dt>
-                    <dd className="mt-1 text-[var(--muted)]">{member.expertise}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-bold text-[var(--text)]">Contribution highlights</dt>
-                    <dd className="mt-1 text-[var(--muted)]">{member.highlights}</dd>
-                  </div>
-                </dl>
-              </div>
-            </div>
-          </Card>
+            </Card>
+          </div>
         ))}
       </div>
     </Section>

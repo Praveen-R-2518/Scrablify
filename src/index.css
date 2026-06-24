@@ -99,6 +99,57 @@ a:focus-visible {
   outline-offset: 4px;
 }
 
+/* Team Card 3D & Avatar Styles */
+.team-card-container {
+  perspective: 1000px;
+}
+
+.team-card-3d {
+  transition: transform 0.4s cubic-bezier(0.22, 0.68, 0, 1.4);
+  transform-style: preserve-3d;
+}
+
+.avatar-container {
+  position: relative;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.avatar-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px dashed currentColor;
+  animation: spin 10s linear infinite;
+  z-index: 3;
+  opacity: 0.8;
+  box-shadow: 0 0 10px currentColor, inset 0 0 10px currentColor;
+}
+
+.avatar-ring::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  animation: spin 15s linear infinite reverse;
+  opacity: 0.3;
+  transform: scale(1.15);
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+
+
 .animate-rise {
   animation: rise 620ms ease both;
 }
