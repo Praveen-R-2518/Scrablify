@@ -68,18 +68,35 @@ const workflow = [
   "The robot picks, moves, and places tiles while the dashboard records the result.",
 ];
 
-const matchFeed = [
-  "Robot placed BOT across center lane.",
-  "Vision scan confirmed board alignment.",
-  "Human submitted SCRABBLE for validation.",
-  "Gripper returned to home position.",
+const competitionEvents = [
+  { time: "02:41", type: "Robot decision", detail: "Selected AXIS after evaluating 18 candidate placements.", delta: "+21" },
+  { time: "02:28", type: "Scoring event", detail: "Human locked GEAR across double-letter lane.", delta: "+17" },
+  { time: "02:09", type: "Robot action", detail: "Gripper completed tile placement and returned home.", delta: "OK" },
+  { time: "01:52", type: "Vision update", detail: "Board scan confirmed all occupied squares within tolerance.", delta: "12ms" },
+  { time: "01:31", type: "Scoring event", detail: "Robot converted QUIZ for the current round high score.", delta: "+32" },
 ];
 
-const telemetry = [
-  ["Camera", "Streaming"],
-  ["Robot Arm", "Ready"],
-  ["Board Scan", "Stable"],
-  ["Move Engine", "Online"],
+const telemetryChannels = [
+  ["Vision latency", "12ms"],
+  ["Control loop", "08ms"],
+  ["Robot link", "Live"],
+  ["Board sync", "99%"],
+];
+
+const scoreTrend = [
+  [0, 92, 86],
+  [1, 98, 91],
+  [2, 104, 103],
+  [3, 112, 109],
+  [4, 119, 117],
+  [5, 126, 124],
+];
+
+const matchStatistics = [
+  ["Human action success", "91%"],
+  ["Robot action success", "88%"],
+  ["Average turn latency", "1.8s"],
+  ["Scoring efficiency", "86%"],
 ];
 
 const highlights = [
@@ -236,7 +253,7 @@ function OverviewPage() {
         copy="This page collects the high-level project goals, evaluation context, and measurable presentation placeholders for Scrablify."
       />
       <Overview />
-      <DashboardPreview />
+      <RealTimeMatchDashboard />
       <TeamAndNextSteps />
     </>
   );
@@ -625,98 +642,262 @@ function HeroMediaPlaceholder() {
 }
 
 function RealTimeMatchDashboard() {
-  const humanScore = useAnimatedScore(84, 126);
-  const robotScore = useAnimatedScore(78, 118);
+  const match = useLiveMatch();
+  const progress = Math.min((match.round / 10) * 100, 100);
 
   return (
-    <Section eyebrow="Real-time match dashboard" title="Live game state at a glance.">
-      <Card className="overflow-hidden p-0">
-        <div className="grid lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="border-b border-[var(--border)] p-6 sm:p-8 lg:border-b-0 lg:border-r">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="text-sm font-bold text-[var(--primary)]">Match Status</p>
-                <h3 className="mt-2 text-2xl font-extrabold tracking-[-0.04em]">Robot turn active</h3>
+    <Section eyebrow="Competition dashboard" title="Real-time robotics match control with timing-screen clarity.">
+      <div className="space-y-4">
+        <Card className="overflow-hidden p-0">
+          <div className="grid lg:grid-cols-[1fr_0.8fr_1fr]">
+            <CompetitorPanel
+              side="Human Player"
+              score={match.human.score}
+              accuracy={match.human.accuracy}
+              actions={match.human.actions}
+              status={match.human.status}
+            />
+
+            <div className="border-y border-[var(--border)] p-6 lg:border-x lg:border-y-0">
+              <p className="text-center text-xs font-extrabold uppercase tracking-[0.22em] text-[var(--primary)]">
+                Live Match State
+              </p>
+              <div className="mt-6 text-center">
+                <p className="font-mono text-6xl font-extrabold tracking-[-0.08em] sm:text-7xl">
+                  {formatTimer(match.elapsed)}
+                </p>
+                <p className="mt-3 text-sm font-bold text-[var(--muted)]">Match Timer</p>
               </div>
-              <span className="rounded-full border border-[var(--border)] px-3 py-1 text-xs font-bold">
-                Round 7
-              </span>
-            </div>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              <LiveScoreCard label="Human Score" score={humanScore} />
-              <LiveScoreCard label="Robot Score" score={robotScore} />
-            </div>
+              <div className="mt-8 grid grid-cols-2 gap-3">
+                <MetricPill label="Current Round" value={`R${match.round}`} />
+                <MetricPill label="Match Status" value={match.status} />
+              </div>
 
-            <div className="mt-6 rounded-3xl border border-[rgba(255,255,255,0.08)] p-5">
-              <p className="text-sm font-bold">Large score display</p>
-              <div className="mt-4 flex items-end justify-between gap-4">
-                <p className="text-6xl font-extrabold tracking-[-0.08em] sm:text-7xl">{humanScore}</p>
-                <p className="pb-3 text-sm font-bold text-[var(--muted)]">vs</p>
-                <p className="text-6xl font-extrabold tracking-[-0.08em] sm:text-7xl">{robotScore}</p>
+              <div className="mt-8">
+                <div className="mb-3 flex items-center justify-between text-xs font-bold uppercase tracking-[0.16em] text-[var(--muted)]">
+                  <span>Match Progress</span>
+                  <span>{Math.round(progress)}%</span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-[rgba(255,255,255,0.08)]">
+                  <div
+                    className="h-full rounded-full bg-[var(--primary)] transition-[width] duration-700 ease-out"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="p-6 sm:p-8">
-            <div className="grid gap-4 sm:grid-cols-2">
-              {telemetry.map(([label, value]) => (
-                <StatusRow key={label} label={label} value={value} />
-              ))}
-            </div>
-
-            <div className="mt-8">
-              <p className="text-sm font-bold">Last Action Feed</p>
-              <ol className="mt-4 space-y-3" aria-label="Recent match actions">
-                {matchFeed.map((item, index) => (
-                  <li
-                    key={item}
-                    className="flex gap-3 rounded-2xl border border-[rgba(255,255,255,0.08)] px-4 py-3 text-sm text-[var(--muted)]"
-                  >
-                    <span className="font-extrabold text-[var(--primary)]">0{index + 1}</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ol>
-            </div>
+            <CompetitorPanel
+              side="Robot"
+              score={match.robot.score}
+              accuracy={match.robot.accuracy}
+              actions={match.robot.actions}
+              status={match.robot.status}
+              align="right"
+            />
           </div>
+        </Card>
+
+        <div className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
+          <EventFeed activeIndex={match.eventIndex} />
+          <TelemetryPanel />
         </div>
-      </Card>
+
+        <AnalyticsPanel />
+      </div>
     </Section>
   );
 }
 
-function LiveScoreCard({ label, score }) {
+function CompetitorPanel({ side, score, accuracy, actions, status, align = "left" }) {
+  const isRight = align === "right";
+
   return (
-    <div className="rounded-3xl border border-[rgba(255,255,255,0.08)] p-5 transition-transform duration-300 hover:-translate-y-0.5">
-      <p className="text-sm text-[var(--muted)]">{label}</p>
-      <p className="mt-3 text-5xl font-extrabold tracking-[-0.07em]">{score}</p>
+    <section className={`p-6 sm:p-8 ${isRight ? "lg:text-right" : ""}`} aria-label={`${side} scoreboard`}>
+      <div className={`flex items-start justify-between gap-4 ${isRight ? "lg:flex-row-reverse" : ""}`}>
+        <div>
+          <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[var(--primary)]">{side}</p>
+          <p className="mt-3 text-7xl font-extrabold tracking-[-0.09em] transition-all duration-500 sm:text-8xl">
+            {score}
+          </p>
+        </div>
+        <span className="rounded-full border border-[var(--border)] px-3 py-1 text-xs font-bold text-[var(--text)]">
+          {status}
+        </span>
+      </div>
+
+      <div className="mt-8 grid gap-3">
+        <ScoreMetric label="Accuracy" value={`${accuracy}%`} level={accuracy} />
+        <ScoreMetric label="Successful Actions" value={actions} level={Math.min(actions * 10, 100)} />
+        <ScoreMetric label="Current Status" value={status} level={status === "Executing" ? 74 : 92} />
+      </div>
+    </section>
+  );
+}
+
+function ScoreMetric({ label, value, level }) {
+  return (
+    <div className="rounded-2xl border border-[rgba(255,255,255,0.08)] p-4">
+      <div className="flex items-center justify-between gap-4">
+        <p className="text-sm text-[var(--muted)]">{label}</p>
+        <p className="text-sm font-extrabold">{value}</p>
+      </div>
+      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[rgba(255,255,255,0.08)]">
+        <div
+          className="h-full rounded-full bg-[var(--primary)] transition-[width] duration-700 ease-out"
+          style={{ width: `${level}%` }}
+        />
+      </div>
     </div>
   );
 }
 
-function useAnimatedScore(start, end) {
-  const [score, setScore] = useState(start);
+function MetricPill({ label, value }) {
+  return (
+    <div className="rounded-2xl border border-[rgba(255,255,255,0.08)] p-4 text-center">
+      <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--muted)]">{label}</p>
+      <p className="mt-2 text-lg font-extrabold">{value}</p>
+    </div>
+  );
+}
+
+function EventFeed({ activeIndex }) {
+  return (
+    <Card className="p-6">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <p className="text-sm font-extrabold text-[var(--primary)]">Event Feed</p>
+          <p className="mt-1 text-sm text-[var(--muted)]">Timestamped scoring, decisions, and robot actions</p>
+        </div>
+        <span className="h-2.5 w-2.5 rounded-full bg-[var(--primary)]" aria-label="Live feed active" />
+      </div>
+
+      <ol className="mt-6 space-y-3" aria-label="Live event feed">
+        {competitionEvents.map((event, index) => (
+          <li
+            key={`${event.time}-${event.type}`}
+            className={`grid gap-3 rounded-2xl border px-4 py-3 text-sm transition-all duration-500 sm:grid-cols-[64px_1fr_auto] ${
+              index === activeIndex
+                ? "border-[var(--primary)] bg-[rgba(0,106,78,0.12)]"
+                : "border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.025)]"
+            }`}
+          >
+            <span className="font-mono font-bold text-[var(--muted)]">{event.time}</span>
+            <span>
+              <strong className="text-[var(--text)]">{event.type}</strong>
+              <span className="block leading-6 text-[var(--muted)]">{event.detail}</span>
+            </span>
+            <span className="font-extrabold text-[var(--primary)]">{event.delta}</span>
+          </li>
+        ))}
+      </ol>
+    </Card>
+  );
+}
+
+function TelemetryPanel() {
+  return (
+    <Card className="p-6">
+      <p className="text-sm font-extrabold text-[var(--primary)]">Minimal Latency Indicators</p>
+      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+        {telemetryChannels.map(([label, value]) => (
+          <div key={label} className="flex items-center justify-between rounded-2xl border border-[rgba(255,255,255,0.08)] px-4 py-3">
+            <div className="flex items-center gap-3">
+              <span className="h-2 w-2 rounded-full bg-[var(--primary)]" />
+              <span className="text-sm text-[var(--muted)]">{label}</span>
+            </div>
+            <span className="font-mono text-sm font-extrabold">{value}</span>
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+function AnalyticsPanel() {
+  return (
+    <Card className="p-6">
+      <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+        <div>
+          <p className="text-sm font-extrabold text-[var(--primary)]">Score Trend Graph</p>
+          <div className="mt-5 rounded-3xl border border-[rgba(255,255,255,0.08)] p-4">
+            <ScoreTrendGraph />
+          </div>
+        </div>
+
+        <div>
+          <p className="text-sm font-extrabold text-[var(--primary)]">Match Statistics</p>
+          <div className="mt-5 grid gap-3">
+            {matchStatistics.map(([label, value]) => (
+              <div key={label} className="flex items-center justify-between rounded-2xl border border-[rgba(255,255,255,0.08)] px-4 py-3">
+                <span className="text-sm text-[var(--muted)]">{label}</span>
+                <span className="text-sm font-extrabold">{value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function ScoreTrendGraph() {
+  const humanPoints = scoreTrend.map(([x, human]) => `${x * 48 + 8},${150 - human * 0.78}`).join(" ");
+  const robotPoints = scoreTrend.map(([x, , robot]) => `${x * 48 + 8},${150 - robot * 0.78}`).join(" ");
+
+  return (
+    <svg viewBox="0 0 260 160" className="h-56 w-full" role="img" aria-label="Score trend graph for human and robot players">
+      {[40, 80, 120].map((y) => (
+        <line key={y} x1="0" x2="260" y1={y} y2={y} stroke="rgba(255,255,255,0.08)" />
+      ))}
+      <polyline points={humanPoints} fill="none" stroke="var(--text)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points={robotPoints} fill="none" stroke="var(--primary)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+      {scoreTrend.map(([x, human, robot]) => (
+        <g key={x}>
+          <circle cx={x * 48 + 8} cy={150 - human * 0.78} r="3.5" fill="var(--text)" />
+          <circle cx={x * 48 + 8} cy={150 - robot * 0.78} r="3.5" fill="var(--primary)" />
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+function useLiveMatch() {
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    const duration = 1100;
-    const startedAt = performance.now();
+    const timer = window.setInterval(() => {
+      setTick((value) => value + 1);
+    }, 1800);
 
-    function tick(now) {
-      const progress = Math.min((now - startedAt) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setScore(Math.round(start + (end - start) * eased));
+    return () => window.clearInterval(timer);
+  }, []);
 
-      if (progress < 1) {
-        requestAnimationFrame(tick);
-      }
-    }
+  return {
+    elapsed: 168 + tick * 3,
+    round: 6 + (tick % 5),
+    status: tick % 3 === 0 ? "Scanning" : tick % 3 === 1 ? "Executing" : "Scoring",
+    eventIndex: tick % competitionEvents.length,
+    human: {
+      score: 126 + Math.floor(tick / 2) * 3,
+      accuracy: 91 + (tick % 3),
+      actions: 14 + (tick % 4),
+      status: tick % 2 === 0 ? "Ready" : "Reviewing",
+    },
+    robot: {
+      score: 124 + Math.floor((tick + 1) / 2) * 4,
+      accuracy: 88 + (tick % 4),
+      actions: 13 + (tick % 5),
+      status: tick % 3 === 1 ? "Executing" : "Ready",
+    },
+  };
+}
 
-    const frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [start, end]);
-
-  return score;
+function formatTimer(totalSeconds) {
+  const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
+  const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+  return `${minutes}:${seconds}`;
 }
 
 function ProjectHighlights() {
@@ -854,64 +1035,6 @@ function HardwareModules() {
         ))}
       </div>
     </Section>
-  );
-}
-
-function DashboardPreview() {
-  return (
-    <Section id="dashboard" eyebrow="Dashboard preview" title="Operator interface for the live match.">
-      <Card className="overflow-hidden p-0">
-        <div className="grid gap-0 lg:grid-cols-[0.8fr_1.2fr]">
-          <div className="border-b border-[var(--border)] p-6 lg:border-b-0 lg:border-r">
-            <div className="flex items-center justify-between">
-              <p className="font-extrabold">Scoreboard</p>
-              <span className="rounded-full bg-[rgba(0,106,78,0.16)] px-3 py-1 text-xs font-bold text-[var(--primary)]">
-                Demo mode
-              </span>
-            </div>
-            <div className="mt-6 grid grid-cols-2 gap-3">
-              <ScoreCard label="Human" score="84" />
-              <ScoreCard label="Robot" score="78" />
-            </div>
-            <div className="mt-6 space-y-3">
-              <StatusRow label="Camera" value="Ready" />
-              <StatusRow label="Gripper" value="Idle" />
-              <StatusRow label="Move queue" value="Empty" />
-            </div>
-          </div>
-
-          <div className="p-6">
-            <div className="flex items-center justify-between gap-4">
-              <p className="font-extrabold">Board state</p>
-              <p className="text-sm text-[var(--muted)]">Round 7 placeholder</p>
-            </div>
-            <div className="mt-6 grid grid-cols-7 gap-2" aria-label="Dashboard board preview">
-              {Array.from({ length: 49 }).map((_, index) => (
-                <span
-                  key={index}
-                  className={`grid aspect-square place-items-center rounded-lg border text-xs font-extrabold ${
-                    [0, 8, 16, 24, 32, 40, 48].includes(index)
-                      ? "border-[var(--primary)] bg-[rgba(0,106,78,0.18)] text-[var(--text)]"
-                      : "border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.035)] text-[var(--muted)]"
-                  }`}
-                >
-                  {["S", "C", "R", "A", "B", "O", "T"][[0, 8, 16, 24, 32, 40, 48].indexOf(index)] || ""}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </Card>
-    </Section>
-  );
-}
-
-function ScoreCard({ label, score }) {
-  return (
-    <div className="rounded-2xl border border-[rgba(255,255,255,0.08)] p-5">
-      <p className="text-sm text-[var(--muted)]">{label}</p>
-      <p className="mt-2 text-4xl font-extrabold tracking-[-0.06em]">{score}</p>
-    </div>
   );
 }
 
