@@ -141,6 +141,23 @@ a:focus-visible {
   transform-style: preserve-3d;
 }
 
+.team-scroll-grid {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+article.team-glass-card {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)),
+    rgba(8, 8, 8, 0.35);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
 .avatar-container {
   position: relative;
   width: 7rem;
@@ -173,6 +190,252 @@ a:focus-visible {
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* Skills matrix */
+.skills-matrix {
+  display: grid;
+  gap: 2rem;
+}
+
+.skills-matrix-radar-panel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.75rem;
+  padding: 1.5rem 1rem 1rem;
+}
+
+.skills-matrix-radar-glow {
+  position: absolute;
+  inset: 18% 20% auto;
+  height: 220px;
+  border-radius: 999px;
+  background: rgba(0, 106, 78, 0.22);
+  filter: blur(48px);
+  pointer-events: none;
+}
+
+.skills-matrix-radar {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: min(100%, 420px);
+  margin: 0 auto;
+}
+
+.skills-matrix-grid-ring {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.07);
+  stroke-width: 1;
+}
+
+.skills-matrix-axis {
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 1;
+}
+
+.skills-matrix-node-dot {
+  fill: var(--primary);
+  filter: drop-shadow(0 0 8px rgba(0, 106, 78, 0.8));
+}
+
+.skills-matrix-axis-label {
+  fill: rgba(255, 255, 255, 0.72);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  text-transform: uppercase;
+}
+
+.skills-matrix-shape {
+  fill: rgba(0, 106, 78, 0.34);
+  stroke: rgba(110, 231, 183, 0.95);
+  stroke-width: 2;
+  transform-origin: 180px 180px;
+  animation: skills-radar-pop 900ms cubic-bezier(0.22, 0.68, 0, 1) both;
+}
+
+.skills-matrix-shape-glow {
+  fill: rgba(0, 106, 78, 0.16);
+  stroke: rgba(110, 231, 183, 0.35);
+  stroke-width: 8;
+  filter: blur(2px);
+  transform-origin: 180px 180px;
+  animation: skills-radar-pop 900ms cubic-bezier(0.22, 0.68, 0, 1) both;
+}
+
+.skills-matrix-radar-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 5.5rem;
+  height: 5.5rem;
+  border-radius: 999px;
+  transform: translate(-50%, -54%);
+}
+
+.skills-matrix-radar-core-value {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.skills-matrix-radar-core-label {
+  margin: 0.2rem 0 0;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.skills-orbit-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.skills-orbit-card {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  justify-items: center;
+  gap: 0.55rem;
+  border-radius: 1.35rem;
+  padding: 1.25rem 1rem 1.1rem;
+  text-align: center;
+  animation: skills-card-rise 620ms ease both;
+  transition:
+    transform 220ms ease,
+    border-color 220ms ease,
+    background 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.skills-orbit-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(0, 106, 78, 0.45);
+  background:
+    linear-gradient(135deg, rgba(0, 106, 78, 0.12), rgba(255, 255, 255, 0.04)),
+    rgba(8, 8, 8, 0.35);
+  box-shadow:
+    0 16px 44px rgba(0, 106, 78, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.skills-orbit-card-glow {
+  position: absolute;
+  inset: auto 20% -40%;
+  height: 70%;
+  border-radius: 999px;
+  background: rgba(0, 106, 78, 0.18);
+  filter: blur(28px);
+  pointer-events: none;
+}
+
+.skills-orbit-ring-wrap {
+  position: relative;
+  width: 4.5rem;
+  height: 4.5rem;
+}
+
+.skills-orbit-ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.skills-orbit-ring-track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 6;
+}
+
+.skills-orbit-ring-progress {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 6;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 6px rgba(0, 106, 78, 0.65));
+}
+
+.skills-orbit-level {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.skills-orbit-name {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.skills-orbit-label {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+@keyframes skills-radar-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes skills-card-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 900px) {
+  .skills-matrix {
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .skills-orbit-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .skills-orbit-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .skills-orbit-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 

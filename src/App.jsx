@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { Link, NavLink, Route, Routes } from "react-router-dom";
 import HardwareCarousel from "./components/HardwareCarousel";
+import SkillsMatrix from "./components/SkillsMatrix";
+import { ScrollReveal, ScrollRevealStagger } from "./components/ScrollReveal";
 
 const navItems = [
   { label: "Overview", href: "/overview" },
@@ -269,18 +271,11 @@ const teamMembers = [
 
 const skillsMatrix = [
   ["Embedded Systems", 4],
-  ["Electronics", 3],
-  ["CAD Design", 4],
+  ["Electronics", 4],
+  ["CAD Design", 3],
   ["Programming", 5],
   ["Testing", 4],
   ["Documentation", 5],
-];
-
-const achievements = [
-  "Established the human-versus-robot Scrabble project concept and system architecture.",
-  "Created a premium project showcase and dashboard interface for demonstrations.",
-  "Defined hardware validation categories for sensing, placement, latency, and safety.",
-  "Prepared placeholders for faculty review, team responsibilities, and final documentation.",
 ];
 
 function App() {
@@ -475,15 +470,15 @@ function TeamPage() {
     <>
       <ParticleCanvas />
       <section className="mx-auto w-[min(1120px,calc(100%_-_32px))] pb-4 pt-16 sm:pt-20 lg:pt-24 text-center flex flex-col items-center">
-        <p className="eyebrow">Team</p>
-        <h1 className="mt-5 max-w-4xl text-balance text-4xl font-extrabold leading-tight tracking-[-0.06em] sm:text-6xl text-white">
-          Meet the Scrablify Team
-        </h1>
+        <ScrollReveal immediate variant="blur-up" delay={0.1} duration={1.05}>
+          <h1 className="max-w-4xl text-balance text-4xl font-extrabold leading-tight tracking-[-0.06em] sm:text-6xl text-white">
+            Meet the Scrablify Team
+          </h1>
+        </ScrollReveal>
       </section>
       <TeamIntroduction />
       <TeamMemberCards />
-      <SkillsMatrix />
-      <TeamAchievements />
+      <TeamSkillsMatrix />
     </>
   );
 }
@@ -507,15 +502,17 @@ function NotFoundPage() {
 
 function TeamIntroduction() {
   return (
-    <Section eyebrow="Team introduction" title="A cross-functional group connecting software, electronics, and physical motion.">
-      <Card className="p-7">
-        <p className="max-w-4xl text-base leading-8 text-[var(--muted)]">
-          Our mission is to turn a familiar board game into a robotics demonstration that is clear,
-          measurable, and technically credible. The team works across sensing, control, mechanics,
-          software, testing, and documentation to present Scrablify as a complete university-level
-          hardware project.
-        </p>
-      </Card>
+    <Section>
+      <ScrollReveal variant="scale-up" duration={1}>
+        <article className="team-glass-card rounded-[1.75rem] p-7 md:p-9">
+          <p className="mx-auto max-w-4xl text-center text-base leading-8 text-[var(--muted)]">
+            Our mission is to turn a familiar board game into a robotics demonstration that is clear,
+            measurable, and technically credible. The team works across sensing, control, mechanics,
+            software, testing, and documentation to present Scrablify as a complete university-level
+            hardware project.
+          </p>
+        </article>
+      </ScrollReveal>
     </Section>
   );
 }
@@ -535,12 +532,12 @@ function TeamMemberCards() {
   };
 
   return (
-    <Section eyebrow="Team members" title="Roles and contributions across the robotics stack.">
-      <div className="flex flex-wrap justify-center gap-6">
+    <Section eyebrow="Team members" headerClassName="mx-auto text-center" eyebrowClassName="text-3xl sm:text-5xl lg:text-6xl" animateHeader>
+      <ScrollRevealStagger className="team-scroll-grid flex flex-wrap justify-center gap-6" stagger={0.14} variant="tilt-up">
         {teamMembers.map((member) => (
-          <div key={member.role} className="team-card-container w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+          <div key={member.name} className="team-card-container w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
             <Card 
-              className="p-6 h-full team-card-3d relative overflow-hidden group"
+              className="team-glass-card p-6 h-full team-card-3d relative overflow-hidden group"
               onMouseMove={(e) => handleMouseMoveCard(e, e.currentTarget)}
               onMouseLeave={(e) => handleMouseLeaveCard(e.currentTarget)}
             >
@@ -580,48 +577,17 @@ function TeamMemberCards() {
             </Card>
           </div>
         ))}
-      </div>
+      </ScrollRevealStagger>
     </Section>
   );
 }
 
-function SkillsMatrix() {
+function TeamSkillsMatrix() {
   return (
-    <Section eyebrow="Skills matrix" title="Capability coverage across the project lifecycle.">
-      <Card className="p-6">
-        <div className="grid gap-5">
-          {skillsMatrix.map(([skill, level]) => (
-            <div key={skill} className="grid gap-3 sm:grid-cols-[180px_1fr] sm:items-center">
-              <p className="text-sm font-bold">{skill}</p>
-              <div className="grid grid-cols-5 gap-2" aria-label={`${skill} level ${level} out of 5`}>
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <span
-                    key={index}
-                    className={`h-3 rounded-full ${
-                      index < level ? "bg-[var(--primary)]" : "bg-[rgba(255,255,255,0.08)]"
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </Card>
-    </Section>
-  );
-}
-
-function TeamAchievements() {
-  return (
-    <Section eyebrow="Team achievements" title="Milestones and accomplishments to document before final review.">
-      <div className="grid gap-4 md:grid-cols-2">
-        {achievements.map((achievement, index) => (
-          <Card key={achievement} className="p-6">
-            <span className="text-sm font-extrabold text-[var(--primary)]">0{index + 1}</span>
-            <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{achievement}</p>
-          </Card>
-        ))}
-      </div>
+    <Section eyebrow="Skills Overview" headerClassName="mx-auto text-center" eyebrowClassName="text-3xl sm:text-5xl lg:text-6xl" animateHeader>
+      <ScrollReveal variant="fade-up" duration={1}>
+        <SkillsMatrix skills={skillsMatrix} />
+      </ScrollReveal>
     </Section>
   );
 }
@@ -1234,15 +1200,21 @@ function TeamAndNextSteps() {
   );
 }
 
-function Section({ id, eyebrow, title, children }) {
-  return (
-    <section id={id} className="mx-auto w-[min(1120px,calc(100%_-_32px))] py-16 sm:py-20 lg:py-24">
-      <div className="mb-10 max-w-3xl">
-        <p className="eyebrow">{eyebrow}</p>
+function Section({ id, eyebrow, title, children, headerClassName = "", eyebrowClassName = "", animateHeader = false }) {
+  const header = (eyebrow || title) && (
+    <div className={`mb-10 max-w-3xl ${headerClassName}`}>
+      {eyebrow && <p className={`eyebrow ${eyebrowClassName}`}>{eyebrow}</p>}
+      {title && (
         <h2 className="mt-4 text-balance text-3xl font-extrabold leading-tight tracking-[-0.055em] sm:text-5xl">
           {title}
         </h2>
-      </div>
+      )}
+    </div>
+  );
+
+  return (
+    <section id={id} className="mx-auto w-[min(1120px,calc(100%_-_32px))] py-16 sm:py-20 lg:py-24">
+      {header && (animateHeader ? <ScrollReveal variant="blur-up">{header}</ScrollReveal> : header)}
       {children}
     </section>
   );
