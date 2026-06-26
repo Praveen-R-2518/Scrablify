@@ -243,29 +243,44 @@ const stats = [
 
 const teamMembers = [
   {
-    name: "Praveen R.",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    color: "#6EE7B7"
+    name: "Praveen Ramanathan",
+    description: "AI major and AI/ML enthusiast. Contributed to the line-following cart, tile rack functionality, hardware control systems, and tile distribution mechanism for Scrablify.",
+    color: "#6EE7B7",
+    image: "/assets/praveen-ramanathan.png",
+    github: "https://github.com/Praveen-R-2518",
+    linkedin: "https://www.linkedin.com/in/praveen-r-b374612aa/"
   },
   {
-    name: "Kumara K.R.K.",
-    description: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-    color: "#3B82F6"
+    name: "Kasun Kumara",
+    description: "BSc (Hons) in Artificial Intelligence undergraduate at the University of Moratuwa. Contributed to plotter motor-drive control, NEMA17 stepper motor programming, power management, and final component interconnectivity.",
+    color: "#3B82F6",
+    image: "/assets/kasun-kumara.png",
+    github: "https://github.com/Kasun-Kumara",
+    linkedin: "https://www.linkedin.com/in/kasun-kumara-30baaa338/"
   },
   {
-    name: "Fernando A.R.S.P.",
-    description: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.",
-    color: "#F472B6"
+    name: "Praveen Fernando",
+    description: "Contributed to the structural design and development of the plotter, webcam integration, OCR implementation, dictionary validation, and actuator system for raising the Scrabble board.",
+    color: "#F472B6",
+    image: "/assets/praveen-fernando.png",
+    github: "https://github.com/ARSPFdo-2004",
+    linkedin: "https://www.linkedin.com/in/praveen-fernando-4236a63a7/"
   },
   {
-    name: "Waththegedara M.C.",
-    description: "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.",
-    color: "#FBBF24"
+    name: "Mahinsa Wattegedara",
+    description: "AI undergraduate at the University of Moratuwa with interests in coding, web development, robotics, and modern technologies. Contributed to the electromagnet-based tile gripping mechanism and Z-axis movement for Scrablify.",
+    color: "#FBBF24",
+    image: "/assets/mahinsa-wattegedara.png",
+    github: "https://github.com/Mahinsa-Wattegedara",
+    linkedin: "https://www.linkedin.com/in/mahinsa-waththegedara-28b7b335a/"
   },
   {
-    name: "Peiris M.R.R.A.N.",
-    description: "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa.",
-    color: "#34D399"
+    name: "Neleesha Peiris",
+    description: "Contributed to PCB design, LCD display integration, LED grid and LED strip control, and button control implementation for the Scrablify hardware interface.",
+    color: "#34D399",
+    image: "/assets/neleesha-peiris.png",
+    github: "https://github.com/nelee25",
+    linkedin: "https://www.linkedin.com/in/neleesha-peiris-43b503319/"
   },
 ];
 
@@ -323,8 +338,8 @@ function Header() {
               key={item.href}
               to={item.href}
               className={({ isActive }) =>
-                `transition-colors duration-200 hover:text-[var(--text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)] ${
-                  isActive ? "text-[var(--primary)]" : ""
+                `relative pb-1 transition-colors duration-200 after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-5 after:-translate-x-1/2 after:rounded-full after:bg-[var(--primary)] after:transition-transform after:duration-200 hover:text-[var(--text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)] ${
+                  isActive ? "text-[var(--primary)] after:scale-x-100" : "after:scale-x-0"
                 }`
               }
             >
@@ -552,7 +567,7 @@ function TeamMemberCards() {
                     style={{ color: member.color }}
                   />
                   <img 
-                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=080A12&color=${member.color.replace('#', '')}&size=112`} 
+                    src={member.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=080A12&color=${member.color.replace('#', '')}&size=112`} 
                     alt={member.name}
                     className="w-full h-full rounded-full object-cover border border-[var(--border)] relative z-10"
                   />
@@ -561,10 +576,22 @@ function TeamMemberCards() {
                   <p className="text-2xl font-extrabold tracking-[-0.04em]">{member.name}</p>
                   
                   <div className="flex justify-center gap-4 mt-4">
-                    <a href="#" className="text-[var(--muted)] hover:text-white transition-colors" aria-label="LinkedIn">
+                    <a
+                      href={member.linkedin || "#"}
+                      className="text-[var(--muted)] hover:text-white transition-colors"
+                      aria-label={`${member.name} LinkedIn`}
+                      target={member.linkedin ? "_blank" : undefined}
+                      rel={member.linkedin ? "noreferrer" : undefined}
+                    >
                       <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
                     </a>
-                    <a href="#" className="text-[var(--muted)] hover:text-white transition-colors" aria-label="GitHub">
+                    <a
+                      href={member.github || "#"}
+                      className="text-[var(--muted)] hover:text-white transition-colors"
+                      aria-label={`${member.name} GitHub`}
+                      target={member.github ? "_blank" : undefined}
+                      rel={member.github ? "noreferrer" : undefined}
+                    >
                       <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                     </a>
                   </div>
