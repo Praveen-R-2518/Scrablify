@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Link, NavLink, Route, Routes } from "react-router-dom";
+import HardwareCarousel from "./components/HardwareCarousel";
 
 const navItems = [
   { label: "Overview", href: "/overview" },
@@ -41,72 +42,104 @@ const architecture = [
 const hardwareModules = [
   {
     name: "ESP32 Microcontroller",
+    category: "Control",
+    image: "/assets/esp32-microcontroller.png",
+    imageAlt: "ESP32 development board with ESP-WROOM-32 module",
     purpose: "Handles connected control tasks, fast IO coordination, and communication with the wider system.",
     specifications: ["3.3V logic", "Wi-Fi/Bluetooth capable", "Serial communication support"],
     role: "Coordinates game-side electronics and can bridge sensor, display, and software control signals.",
   },
   {
     name: "Arduino Uno + CNC Shield V3",
+    category: "Motion",
+    image: "/assets/arduino-uno-board.png",
+    imageAlt: "Arduino Uno Rev3 microcontroller board",
     purpose: "Provides the dedicated motion-control layer for the X-Y plotter mechanism.",
     specifications: ["5V logic", "CNC Shield V3 expansion", "Stepper driver slots for axis control"],
     role: "Receives movement commands and drives the plotter axes for accurate tile positioning.",
   },
   {
     name: "NEMA17 Stepper Motors",
+    category: "Motion",
+    image: "/assets/nema17-stepper-motors.png",
+    imageAlt: "NEMA 17 stepper motor with mounting plate and connector",
     purpose: "Move the plotter head across the Scrabble board with repeatable X-Y positioning.",
     specifications: ["Stepper-based positioning", "X-axis and Y-axis movement", "Driven through A4988 modules"],
     role: "Forms the mechanical motion backbone for robotic tile placement.",
   },
   {
     name: "A4988 Stepper Drivers",
+    category: "Motion",
+    image: "/assets/a4988-stepper-drivers.png",
+    imageAlt: "A4988 stepper motor driver module with heat sink",
     purpose: "Convert controller step and direction signals into motor phase currents.",
     specifications: ["Microstepping support", "Current-limit adjustment", "CNC Shield compatible"],
     role: "Sits between the CNC Shield and NEMA17 motors to control speed, direction, and torque.",
   },
   {
     name: "12V Electromagnet + Z-Axis",
+    category: "Pickup",
+    image: "/assets/12v-electromagnet.png",
+    imageAlt: "12V cylindrical electromagnet with wire leads",
     purpose: "Picks up and releases Scrabble tiles during robotic placement.",
     specifications: ["12V electromagnet", "Vertical pickup/drop motion", "Tile grip calibration required"],
     role: "Acts as the end effector that physically transfers each tile onto the board.",
   },
   {
     name: "MG995 Servo Motor",
+    category: "Actuation",
+    image: "/assets/mg995-servo-motor.png",
+    imageAlt: "MG995 high-speed digital servo motor with three-wire connector",
     purpose: "Supports controlled mechanical movement for tile handling or auxiliary actuation.",
     specifications: ["High-torque servo", "PWM control", "Mechanical linkage support"],
     role: "Adds controlled angular motion where the system needs compact actuation.",
   },
   {
     name: "Web Camera",
+    category: "Sensing",
+    image: "/assets/web-camera.png",
+    imageAlt: "USB webcam for board image capture",
     purpose: "Captures board images for OCR-based letter and word recognition.",
     specifications: ["Board-facing camera", "Image capture for Python processing", "Lighting-sensitive calibration"],
     role: "Feeds visual data to Tesseract OCR and dictionary validation logic.",
   },
   {
     name: "ST7920 Graphical LCD + Buttons",
+    category: "Interface",
+    image: "/assets/st7920-graphical-lcd.png",
+    imageAlt: "128x64 ST7920 graphical LCD module",
     purpose: "Displays timer, startup messages, challenge menus, and user navigation options.",
     specifications: ["Graphical LCD display", "Push buttons for Power, Countdown, Challenge, Previous, Next"],
     role: "Provides the local player interface for match control and challenge handling.",
   },
   {
     name: "RGB LED Strip",
+    category: "Interface",
+    image: "/assets/rgb-led-strip.png",
+    imageAlt: "Addressable RGB LED strip with multicolor lighting",
     purpose: "Highlights challenged words and gives visual feedback during gameplay.",
     specifications: ["Addressable visual feedback", "Board highlight zones", "Microcontroller controlled"],
     role: "Makes challenge status and selected word positions visible to players.",
   },
   {
     name: "Tile Distribution Cart",
+    category: "Distribution",
     purpose: "Moves tiles between the human and robotic player positions.",
     specifications: ["1000RPM 12V gear motor", "L298N motor driver", "Relay-assisted power switching"],
     role: "Automates tile distribution and supports repeatable rack-to-board workflow.",
   },
   {
     name: "Power Regulation",
+    category: "Power",
     purpose: "Distributes stable voltages to motors, logic boards, display, and actuators.",
     specifications: ["12V power pack", "Buck converter", "Separate motor and logic rails"],
     role: "Keeps high-current actuators isolated from sensitive control electronics.",
   },
   {
     name: "Rack and Pinion Mechanism",
+    category: "Mechanism",
+    image: "/assets/rack-and-pinion-mechanism.png",
+    imageAlt: "Rack and pinion gear mechanism for linear motion",
     purpose: "Provides mechanical translation for board lift, tile feed, or positioning movement.",
     specifications: ["Linear mechanical motion", "Actuator integration", "Alignment-dependent assembly"],
     role: "Converts motor rotation into controlled linear motion for the physical system.",
@@ -286,12 +319,7 @@ function Header() {
         aria-label="Primary navigation"
       >
         <Link to="/" className="group flex items-center gap-3" aria-label="Scrablify home">
-          <img 
-            src="/assets/logo.png" 
-            alt="Scrablify Logo" 
-            className="h-9 w-auto transition-transform duration-200 group-hover:scale-95"
-            style={{ filter: 'brightness(0) invert(1)' }}
-          />
+          <span className="site-logo transition-transform duration-200 group-hover:scale-95" aria-hidden="true" />
         </Link>
 
         <div className="flex w-full flex-wrap items-center gap-x-5 gap-y-2 text-sm font-semibold text-[var(--muted)] sm:w-auto sm:justify-end">
@@ -1033,35 +1061,8 @@ function HardwareOverview() {
 
 function HardwareModules() {
   return (
-    <Section id="hardware" eyebrow="Components grid" title="Component cards with purpose, specifications, and system role.">
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {hardwareModules.map((module) => (
-          <Card key={module.name} className="flex flex-col overflow-hidden">
-            <div className="grid aspect-[16/9] place-items-center border-b border-[rgba(255,255,255,0.08)] bg-[linear-gradient(135deg,rgba(0,106,78,0.22),rgba(255,255,255,0.035))]">
-              <div className="rounded-2xl border border-dashed border-[rgba(255,255,255,0.22)] px-5 py-4 text-center">
-                <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[var(--primary)]">Image</p>
-                <p className="mt-1 text-sm font-bold text-[var(--muted)]">Component placeholder</p>
-              </div>
-            </div>
-            <div className="flex flex-1 flex-col p-6">
-              <h3 className="text-xl font-extrabold tracking-[-0.03em]">{module.name}</h3>
-              <InfoBlock title="Purpose" copy={module.purpose} />
-              <div className="mt-5">
-                <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--primary)]">Specifications</p>
-                <ul className="mt-3 space-y-2 text-sm leading-6 text-[var(--muted)]">
-                  {module.specifications.map((spec) => (
-                    <li key={spec} className="flex gap-2">
-                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--primary)]" />
-                      <span>{spec}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <InfoBlock title="Role in system" copy={module.role} />
-            </div>
-          </Card>
-        ))}
-      </div>
+    <Section id="hardware" eyebrow="Components showcase" title="Browse hardware modules in a 3D carousel with full specs below.">
+      <HardwareCarousel modules={hardwareModules} />
     </Section>
   );
 }
