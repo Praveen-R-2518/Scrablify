@@ -200,21 +200,6 @@ const workflow = [
   "The robot picks, moves, and places tiles while the dashboard records the result.",
 ];
 
-const competitionEvents = [
-  { time: "02:41", type: "Robot decision", detail: "Selected AXIS after evaluating 18 candidate placements.", delta: "+21" },
-  { time: "02:28", type: "Scoring event", detail: "Human locked GEAR across double-letter lane.", delta: "+17" },
-  { time: "02:09", type: "Robot action", detail: "Gripper completed tile placement and returned home.", delta: "OK" },
-  { time: "01:52", type: "Vision update", detail: "Board scan confirmed all occupied squares within tolerance.", delta: "12ms" },
-  { time: "01:31", type: "Scoring event", detail: "Robot converted QUIZ for the current round high score.", delta: "+32" },
-];
-
-const telemetryChannels = [
-  ["Vision latency", "12ms"],
-  ["Control loop", "08ms"],
-  ["Robot link", "Live"],
-  ["Board sync", "99%"],
-];
-
 const highlights = [
   {
     title: "Autonomous Navigation",
@@ -244,7 +229,7 @@ const stats = [
 const teamMembers = [
   {
     name: "Praveen Ramanathan",
-    description: "AI major and AI/ML enthusiast. Contributed to the line-following cart, tile rack functionality, hardware control systems, and tile distribution mechanism for Scrablify.",
+    description: "Handled tile cart hardware and control systems, including forward/backward cart movement, tile rack functionality, calibration, and mechanical integration. Also designed the 12 x 12 light grid representation and developed the live website dashboard for showcasing the game, project, and team.",
     color: "#6EE7B7",
     image: "/assets/praveen-ramanathan.png",
     github: "https://github.com/Praveen-R-2518",
@@ -252,7 +237,7 @@ const teamMembers = [
   },
   {
     name: "Kasun Kumara",
-    description: "BSc (Hons) in Artificial Intelligence undergraduate at the University of Moratuwa. Contributed to plotter motor-drive control, NEMA17 stepper motor programming, power management, and final component interconnectivity.",
+    description: "Developed the plotter motor-control system, programmed NEMA17 stepper motors for X-Y movement, configured motor drivers and power management, and built final interconnectivity between the plotter, tile cart, and board. Also worked on the desktop application backend with custom API integration.",
     color: "#3B82F6",
     image: "/assets/kasun-kumara.png",
     github: "https://github.com/Kasun-Kumara",
@@ -260,7 +245,7 @@ const teamMembers = [
   },
   {
     name: "Praveen Fernando",
-    description: "Contributed to the structural design and development of the plotter, webcam integration, OCR implementation, dictionary validation, and actuator system for raising the Scrabble board.",
+    description: "Designed and developed the plotter frame, assembled the belt-driven X-Y mechanism, integrated the webcam for board capture, implemented OCR and online dictionary validation, and developed the board-raising actuator system. Also contributed to mobile application development and system testing.",
     color: "#F472B6",
     image: "/assets/praveen-fernando.png",
     github: "https://github.com/ARSPFdo-2004",
@@ -268,7 +253,7 @@ const teamMembers = [
   },
   {
     name: "Mahinsa Wattegedara",
-    description: "AI undergraduate at the University of Moratuwa with interests in coding, web development, robotics, and modern technologies. Contributed to the electromagnet-based tile gripping mechanism and Z-axis movement for Scrablify.",
+    description: "Worked on the board structure, 3D design, tile gripping mechanism, electromagnet-based pickup system, and Z-axis movement. Integrated the pickup mechanism with the X-Y plotter, calibrated pickup/drop-off positions, and tested the claw and Z-axis assembly for accurate tile placement.",
     color: "#FBBF24",
     image: "/assets/mahinsa-wattegedara.png",
     github: "https://github.com/Mahinsa-Wattegedara",
@@ -276,7 +261,7 @@ const teamMembers = [
   },
   {
     name: "Neleesha Peiris",
-    description: "Contributed to PCB design, LCD display integration, LED grid and LED strip control, and button control implementation for the Scrablify hardware interface.",
+    description: "Designed the PCB for the tile cart, LCD display, buttons, and actuator control system using EasyEDA. Prepared PCB layouts, verified component placement, handled soldering and hardware integration, designed the ST7920 LCD interface, and implemented Power, Countdown, Challenge, Previous, and Next button controls.",
     color: "#34D399",
     image: "/assets/neleesha-peiris.png",
     github: "https://github.com/nelee25",
@@ -684,173 +669,56 @@ function HeroMediaPlaceholder() {
 
 function RealTimeMatchDashboard() {
   const match = useLiveMatch();
-  const progress = Math.min((match.round / 10) * 100, 100);
 
   return (
-    <Section eyebrow="Competition dashboard" title="Real-time robotics match control with timing-screen clarity.">
-      <div className="space-y-4">
-        <Card className="overflow-hidden p-0">
-          <div className="grid lg:grid-cols-[1fr_0.8fr_1fr]">
-            <CompetitorPanel
-              side="Human Player"
-              score={match.human.score}
-              accuracy={match.human.accuracy}
-              actions={match.human.actions}
-              status={match.human.status}
-            />
+    <Section eyebrow="Live match" title="Simple live view of the human-versus-robot game.">
+      <Card className="overflow-hidden p-0">
+        <div className="grid lg:grid-cols-[1fr_0.9fr_1fr]">
+          <CompetitorPanel side="Human Player" score={match.human.score} isActive={match.currentPlayer === "Human Player"} />
 
-            <div className="border-y border-[var(--border)] p-6 lg:border-x lg:border-y-0">
-              <p className="text-center text-xs font-extrabold uppercase tracking-[0.22em] text-[var(--primary)]">
-                Live Match State
+          <div className="border-y border-[var(--border)] p-6 text-center lg:border-x lg:border-y-0 sm:p-8">
+            <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[var(--primary)]">
+              Game Time
+            </p>
+            <p className="mt-5 font-mono text-6xl font-extrabold tracking-[-0.08em] sm:text-7xl">
+              {formatTimer(match.elapsed)}
+            </p>
+            <div className="mt-8 rounded-3xl border border-[var(--border)] bg-[rgba(0,106,78,0.12)] p-5">
+              <p className="text-sm font-bold text-[var(--muted)]">Playing Right Now</p>
+              <p className="mt-2 text-3xl font-extrabold tracking-[-0.05em] text-[var(--text)]">
+                {match.currentPlayer}
               </p>
-              <div className="mt-6 text-center">
-                <p className="font-mono text-6xl font-extrabold tracking-[-0.08em] sm:text-7xl">
-                  {formatTimer(match.elapsed)}
-                </p>
-                <p className="mt-3 text-sm font-bold text-[var(--muted)]">Match Timer</p>
-              </div>
-
-              <div className="mt-8 grid grid-cols-2 gap-3">
-                <MetricPill label="Current Round" value={`R${match.round}`} />
-                <MetricPill label="Match Status" value={match.status} />
-              </div>
-
-              <div className="mt-8">
-                <div className="mb-3 flex items-center justify-between text-xs font-bold uppercase tracking-[0.16em] text-[var(--muted)]">
-                  <span>Match Progress</span>
-                  <span>{Math.round(progress)}%</span>
-                </div>
-                <div className="h-2 overflow-hidden rounded-full bg-[rgba(255,255,255,0.08)]">
-                  <div
-                    className="h-full rounded-full bg-[var(--primary)] transition-[width] duration-700 ease-out"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-              </div>
             </div>
-
-            <CompetitorPanel
-              side="Robot"
-              score={match.robot.score}
-              accuracy={match.robot.accuracy}
-              actions={match.robot.actions}
-              status={match.robot.status}
-              align="right"
-            />
           </div>
-        </Card>
 
-        <div className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
-          <EventFeed activeIndex={match.eventIndex} />
-          <TelemetryPanel />
+          <CompetitorPanel side="Robot" score={match.robot.score} isActive={match.currentPlayer === "Robot"} align="right" />
         </div>
-      </div>
+      </Card>
     </Section>
   );
 }
 
-function CompetitorPanel({ side, score, accuracy, actions, status, align = "left" }) {
+function CompetitorPanel({ side, score, isActive, align = "left" }) {
   const isRight = align === "right";
 
   return (
-    <section className={`p-6 sm:p-8 ${isRight ? "lg:text-right" : ""}`} aria-label={`${side} scoreboard`}>
-      <div className={`flex items-start justify-between gap-4 ${isRight ? "lg:flex-row-reverse" : ""}`}>
+    <section
+      className={`grid min-h-[310px] place-items-center p-6 text-center transition-colors duration-300 sm:p-8 ${isActive ? "bg-[rgba(0,106,78,0.08)]" : ""}`}
+      aria-label={`${side} scoreboard`}
+    >
+      <div className="flex flex-col items-center justify-center gap-4">
         <div>
           <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[var(--primary)]">{side}</p>
           <p className="mt-3 text-7xl font-extrabold tracking-[-0.09em] transition-all duration-500 sm:text-8xl">
             {score}
           </p>
+          <p className="mt-2 text-sm font-bold text-[var(--muted)]">Live Score</p>
         </div>
-        <span className="rounded-full border border-[var(--border)] px-3 py-1 text-xs font-bold text-[var(--text)]">
-          {status}
+        <span className={`rounded-full border px-3 py-1 text-xs font-bold ${isActive ? "border-[var(--primary)] bg-[rgba(0,106,78,0.18)] text-[var(--text)]" : "border-[var(--border)] text-[var(--muted)]"}`}>
+          {isActive ? "Playing" : "Waiting"}
         </span>
       </div>
-
-      <div className="mt-8 grid gap-3">
-        <ScoreMetric label="Accuracy" value={`${accuracy}%`} level={accuracy} />
-        <ScoreMetric label="Successful Actions" value={actions} level={Math.min(actions * 10, 100)} />
-        <ScoreMetric label="Current Status" value={status} level={status === "Executing" ? 74 : 92} />
-      </div>
     </section>
-  );
-}
-
-function ScoreMetric({ label, value, level }) {
-  return (
-    <div className="rounded-2xl border border-[rgba(255,255,255,0.08)] p-4">
-      <div className="flex items-center justify-between gap-4">
-        <p className="text-sm text-[var(--muted)]">{label}</p>
-        <p className="text-sm font-extrabold">{value}</p>
-      </div>
-      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[rgba(255,255,255,0.08)]">
-        <div
-          className="h-full rounded-full bg-[var(--primary)] transition-[width] duration-700 ease-out"
-          style={{ width: `${level}%` }}
-        />
-      </div>
-    </div>
-  );
-}
-
-function MetricPill({ label, value }) {
-  return (
-    <div className="rounded-2xl border border-[rgba(255,255,255,0.08)] p-4 text-center">
-      <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--muted)]">{label}</p>
-      <p className="mt-2 text-lg font-extrabold">{value}</p>
-    </div>
-  );
-}
-
-function EventFeed({ activeIndex }) {
-  return (
-    <Card className="p-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <p className="text-sm font-extrabold text-[var(--primary)]">Event Feed</p>
-          <p className="mt-1 text-sm text-[var(--muted)]">Timestamped scoring, decisions, and robot actions</p>
-        </div>
-        <span className="h-2.5 w-2.5 rounded-full bg-[var(--primary)]" aria-label="Live feed active" />
-      </div>
-
-      <ol className="mt-6 space-y-3" aria-label="Live event feed">
-        {competitionEvents.map((event, index) => (
-          <li
-            key={`${event.time}-${event.type}`}
-            className={`grid gap-3 rounded-2xl border px-4 py-3 text-sm transition-all duration-500 sm:grid-cols-[64px_1fr_auto] ${
-              index === activeIndex
-                ? "border-[var(--primary)] bg-[rgba(0,106,78,0.12)]"
-                : "border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.025)]"
-            }`}
-          >
-            <span className="font-mono font-bold text-[var(--muted)]">{event.time}</span>
-            <span>
-              <strong className="text-[var(--text)]">{event.type}</strong>
-              <span className="block leading-6 text-[var(--muted)]">{event.detail}</span>
-            </span>
-            <span className="font-extrabold text-[var(--primary)]">{event.delta}</span>
-          </li>
-        ))}
-      </ol>
-    </Card>
-  );
-}
-
-function TelemetryPanel() {
-  return (
-    <Card className="p-6">
-      <p className="text-sm font-extrabold text-[var(--primary)]">Minimal Latency Indicators</p>
-      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-        {telemetryChannels.map(([label, value]) => (
-          <div key={label} className="flex items-center justify-between rounded-2xl border border-[rgba(255,255,255,0.08)] px-4 py-3">
-            <div className="flex items-center gap-3">
-              <span className="h-2 w-2 rounded-full bg-[var(--primary)]" />
-              <span className="text-sm text-[var(--muted)]">{label}</span>
-            </div>
-            <span className="font-mono text-sm font-extrabold">{value}</span>
-          </div>
-        ))}
-      </div>
-    </Card>
   );
 }
 
@@ -860,27 +728,19 @@ function useLiveMatch() {
   useEffect(() => {
     const timer = window.setInterval(() => {
       setTick((value) => value + 1);
-    }, 1800);
+    }, 1000);
 
     return () => window.clearInterval(timer);
   }, []);
 
   return {
-    elapsed: 168 + tick * 3,
-    round: 6 + (tick % 5),
-    status: tick % 3 === 0 ? "Scanning" : tick % 3 === 1 ? "Executing" : "Scoring",
-    eventIndex: tick % competitionEvents.length,
+    elapsed: tick,
+    currentPlayer: tick % 2 === 0 ? "Human Player" : "Robot",
     human: {
       score: 126 + Math.floor(tick / 2) * 3,
-      accuracy: 91 + (tick % 3),
-      actions: 14 + (tick % 4),
-      status: tick % 2 === 0 ? "Ready" : "Reviewing",
     },
     robot: {
       score: 124 + Math.floor((tick + 1) / 2) * 4,
-      accuracy: 88 + (tick % 4),
-      actions: 13 + (tick % 5),
-      status: tick % 3 === 1 ? "Executing" : "Ready",
     },
   };
 }
@@ -1257,17 +1117,63 @@ function Card({ className = "", children }) {
 
 function Footer() {
   return (
-    <footer className="mx-auto grid w-[min(1120px,calc(100%_-_32px))] gap-4 border-t border-[var(--border)] py-8 text-sm text-[var(--muted)] md:grid-cols-3">
-      <div>
-        <p>First Year Microcontroller Project</p>
-      </div>
-      <div>
-        <p>Faculty of Information Technology</p>
-      </div>
-      <div>
-        <p>Batch 24</p>
+    <footer className="w-full pt-10 text-sm text-[var(--muted)]">
+      <div className="overflow-hidden border-y border-[var(--border)] bg-[linear-gradient(135deg,rgba(0,106,78,0.13),rgba(255,255,255,0.035))]">
+        <div className="mx-auto grid w-[min(1120px,calc(100%_-_32px))] gap-8 p-6 sm:p-8 lg:grid-cols-[1.1fr_0.9fr_0.75fr]">
+          <div>
+            <Link to="/" className="inline-flex items-center gap-3" aria-label="Scrablify home">
+              <span className="site-logo" aria-hidden="true" />
+            </Link>
+            <p className="mt-5 max-w-md leading-7">
+              A smart Scrabble board project combining robotics, OCR-based word validation,
+              embedded control, and an interactive live dashboard.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {["Robotics", "OCR", "Microcontrollers", "Live Dashboard"].map((item) => (
+                <span key={item} className="rounded-full border border-[var(--border)] bg-[rgba(0,0,0,0.2)] px-3 py-1 text-xs font-bold text-[var(--text)]">
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[var(--primary)]">Project Info</p>
+            <div className="mt-5 grid gap-3">
+              <FooterInfo label="Project" value="First Year Microcontroller Project" />
+              <FooterInfo label="Faculty" value="Faculty of Information Technology" />
+              <FooterInfo label="Batch" value="Batch 24" />
+              <FooterInfo label="Team" value="Team Slytherin" />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[var(--primary)]">Explore</p>
+            <nav className="mt-5 grid gap-3" aria-label="Footer navigation">
+              {navItems.map((item) => (
+                <Link key={item.href} to={item.href} className="transition-colors hover:text-[var(--text)]">
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        </div>
+
+        <div className="mx-auto flex w-[min(1120px,calc(100%_-_32px))] flex-col gap-3 border-t border-[rgba(255,255,255,0.08)] px-6 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+          <p>Built by Team Slytherin for the CM1900 Intelligent Machines Inspirational Project.</p>
+          <p className="font-bold text-[var(--text)]">University of Moratuwa</p>
+        </div>
       </div>
     </footer>
+  );
+}
+
+function FooterInfo({ label, value }) {
+  return (
+    <div className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(0,0,0,0.18)] px-4 py-3">
+      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--primary)]">{label}</p>
+      <p className="mt-1 font-bold text-[var(--text)]">{value}</p>
+    </div>
   );
 }
 
